@@ -1,8 +1,8 @@
 package isel.leic.poo.nrcircuit.model;
 
-import isel.leic.poo.nrcircuit.model.connectors.Connector;
 import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -14,14 +14,15 @@ import java.util.LinkedList;
  * @author rcacheira & nreis
  *
  */
-public class Path {
+public class Path implements Iterable<Place>{
 	private final Terminal initialT;
 	private Terminal finalT;
-	private LinkedList<Connector> connectors;
+	private LinkedList<Place> places;
 	
 	public Path(Terminal initialT) {
 		this.initialT = initialT;
-		connectors = new LinkedList<>();
+		places = new LinkedList<>();
+		places.add(initialT);
 	}
 	
 	public void add(Place place){
@@ -32,9 +33,7 @@ public class Path {
 		if(place instanceof Terminal){
 			finalT = (Terminal)place;
 		}
-		else{
-			connectors.add((Connector)place);
-		}
+		places.add(place);
 	}
 	
 	public void clear(Place p){
@@ -42,10 +41,10 @@ public class Path {
 			return;
 		}
 		finalT = null;
-		int finalIdx = connectors.size();
-		int initialIdx = connectors.indexOf(p);
+		int finalIdx = places.size();
+		int initialIdx = places.indexOf(p);
 		if(initialIdx < finalIdx-1){
-			connectors.removeAll(connectors.subList(initialIdx, finalIdx));
+			places.removeAll(places.subList(initialIdx, finalIdx));
 		}
 		return;
 	}
@@ -59,11 +58,7 @@ public class Path {
 	}
 	
 	public boolean hasPlace(Place place){
-		if(initialT.equals(place))
-			return true;
-		if(isFull() && finalT.equals(place))
-			return true;
-		return connectors.contains(place);
+		return places.contains(place);
 	}
 	
 	public boolean isFull(){
@@ -71,11 +66,12 @@ public class Path {
 	}
 	
 	public Place getLastPlace(){
-		if( finalT != null)
-			return finalT;
-		if( connectors.isEmpty())
-			return initialT;
-		return connectors.getLast();
+		return places.getLast();
+	}
+	
+	@Override
+	public Iterator<Place> iterator() {
+		return places.iterator();
 	}
 	
 	public class PathFullException extends RuntimeException{

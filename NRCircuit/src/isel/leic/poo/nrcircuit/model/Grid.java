@@ -98,6 +98,7 @@ public class Grid {
 		}
 		if(place instanceof Terminal && place.canBeCrossed(direction)){
 			workingPath = new Path((Terminal)place);
+			paths.add(workingPath);
 			return true;
 		}
 		return false;
@@ -148,6 +149,26 @@ public class Grid {
 	
 	public int getSize(){
 		return width*height;
+	}
+	
+	public boolean isComplete(){
+		boolean[][] crossed = new boolean[width][height];
+		
+		for (Path path : paths) {
+			for (Place place : path) {
+				crossed[place.coordinate.x][place.coordinate.y] = true;
+			}
+		}
+	
+		for (int i = 0; i < crossed.length; i++) {
+			for (int j = 0; j < crossed[i].length; j++) {
+				if(!crossed[i][j] && !(grid[i][j] instanceof ProhibitedPlace)){
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/**

@@ -84,6 +84,7 @@ public class GridTests {
 		
 		assertFalse(grid.setWorkingPath(Coordinate.get(0, 1), Direction.get(Position.LEFT, Position.RIGHT)));
 		assertFalse(grid.doCross(Coordinate.get(0, 1), Direction.get(Position.LEFT, Position.RIGHT)));
+		assertFalse(grid.isComplete());
 		
 		assertTrue(grid.setWorkingPath(Coordinate.get(0, 0), Direction.get(Position.CENTER, Position.RIGHT)));
 		assertTrue(grid.doCross(Coordinate.get(0, 1), Direction.get(Position.LEFT, Position.RIGHT)));
@@ -99,6 +100,8 @@ public class GridTests {
 		assertTrue(grid.doCross(Coordinate.get(4, 1), Direction.get(Position.RIGHT, Position.LEFT)));
 		assertTrue(grid.doCross(Coordinate.get(4, 0), Direction.get(Position.RIGHT, Position.CENTER)));
 		
+		assertFalse(grid.isComplete());
+		
 		assertTrue(grid.setWorkingPath(Coordinate.get(1, 0), Direction.get(Position.CENTER, Position.RIGHT)));
 		assertTrue(grid.doCross(Coordinate.get(1, 1), Direction.get(Position.LEFT, Position.RIGHT)));
 		assertTrue(grid.doCross(Coordinate.get(1, 2), Direction.get(Position.LEFT, Position.RIGHT)));
@@ -109,8 +112,12 @@ public class GridTests {
 		assertTrue(grid.doCross(Coordinate.get(3, 1), Direction.get(Position.RIGHT, Position.LEFT)));
 		assertTrue(grid.doCross(Coordinate.get(3, 0), Direction.get(Position.RIGHT, Position.CENTER)));
 		
+		assertFalse(grid.isComplete());
+		
 		assertTrue(grid.setWorkingPath(Coordinate.get(2, 0), Direction.get(Position.CENTER, Position.RIGHT)));
 		assertTrue(grid.doCross(Coordinate.get(2, 1), Direction.get(Position.LEFT, Position.CENTER)));
+	
+		assertTrue(grid.isComplete());
 	}
 	
 	@Test (expected = IllegalStateException.class)
