@@ -10,6 +10,7 @@ package isel.leic.poo.nrcircuit.model;
  */
 public abstract class Place {
 
+	
 	/**
 	 * The instance's position
 	 */
@@ -41,5 +42,16 @@ public abstract class Place {
 	 * {@code false}, otherwise
 	 */
 	public abstract boolean canBeCrossed(Direction direction);
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this)
+			return true;
+		if(!(obj instanceof Place))
+			return false;
+		Place p = (Place)obj;
+		
+		return p.getCoordinate().equals(coordinate);
+	}
 	
 }

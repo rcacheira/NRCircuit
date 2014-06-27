@@ -21,6 +21,8 @@ public class Direction {
 		CENTER
 	}
 	
+	private static Direction[][] directions = new Direction[5][5];
+	
 	/**
 	 * Direction position values
 	 */
@@ -34,11 +36,19 @@ public class Direction {
 	 * @throws IllegalArgumentException if either from or to is null or from 
 	 * and to positions are equal
 	 */
-	public Direction(Position from, Position to) {
+	private Direction(Position from, Position to) {
 		if(from == null || to == null) throw new IllegalArgumentException("any position can't be null");
 		if(from == to) throw new IllegalArgumentException("from can't equals to");
 		
 		this.from = from;
 		this.to = to;
+	}
+	
+	public static Direction get(Position from, Position to){
+		if(from == null || to == null) throw new IllegalArgumentException("any position can't be null");
+		if(directions[from.ordinal()][to.ordinal()] == null){
+			directions[from.ordinal()][to.ordinal()] = new Direction(from,to);
+		}
+		return directions[from.ordinal()][to.ordinal()];
 	}
 }

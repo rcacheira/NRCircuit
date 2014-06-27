@@ -10,7 +10,7 @@ import isel.leic.poo.nrcircuit.model.Place;
  *
  */
 public abstract class Terminal extends Place {
-
+	
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
@@ -19,4 +19,7 @@ public abstract class Terminal extends Place {
 	public Terminal(Coordinate coordinate) {
 		super(coordinate);
 	}
+	
+	public abstract char getLetter();
+	
 }

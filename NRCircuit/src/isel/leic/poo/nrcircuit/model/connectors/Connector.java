@@ -27,4 +27,9 @@ public class Connector extends Place {
 		return direction.from != Position.CENTER && direction.to != Position.CENTER;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) && obj instanceof Connector;
+	}
+	
 }

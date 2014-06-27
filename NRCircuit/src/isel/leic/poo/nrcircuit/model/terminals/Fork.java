@@ -11,6 +11,9 @@ import isel.leic.poo.nrcircuit.model.Direction.Position;
  *
  */
 public class Fork extends Terminal {
+	
+	private char letter;
+	
 	/**
 	 * The instance's orientation
 	 */
@@ -69,5 +72,22 @@ public class Fork extends Terminal {
 			case VERTICAL_RIGHT: return checkVerticalCross(direction, Position.RIGHT);
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(super.equals(obj) && obj instanceof Fork)
+			return ((Fork)obj).orientation == orientation;
+		
+		return false;
+	}
+	
+	public void setLetter(char letter) {
+		this.letter = letter;
+	}
+	
+	@Override
+	public char getLetter() {
+		return letter;
 	}
 }

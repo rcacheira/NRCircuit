@@ -14,6 +14,8 @@ import isel.leic.poo.nrcircuit.model.Direction.Position;
  */
 public class Tunnel extends Terminal {
 
+	char letter;
+	
 	/**
 	 * tunnel's brother
 	 */
@@ -41,9 +43,9 @@ public class Tunnel extends Terminal {
 	 */
 	public void setTwin(Tunnel twin) {
 		if(twin == null) 
-			throw new IllegalArgumentException("brother can't be null");
+			throw new IllegalArgumentException("twin can't be null");
 		if(this.twin != null) 
-			throw new IllegalStateException("brother can't be set twice");
+			throw new IllegalStateException("twin can't be set twice");
 		
 		this.twin = twin;
 		if(twin.getTwin() == null) twin.setTwin(this);
@@ -56,5 +58,22 @@ public class Tunnel extends Terminal {
 	 */
 	public Tunnel getTwin() {
 		return twin;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(super.equals(obj) && obj instanceof Tunnel)
+			return ((Tunnel)obj).twin == twin;
+		
+		return false;
+	}
+	
+	public void setLetter(char letter) {
+		this.letter = letter;
+	}
+	
+	@Override
+	public char getLetter() {
+		return letter;
 	}
 }

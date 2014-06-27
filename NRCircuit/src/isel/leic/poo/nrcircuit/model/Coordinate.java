@@ -8,10 +8,20 @@ package isel.leic.poo.nrcircuit.model;
  *
  */
 public class Coordinate {
+	
+	private static int nrOfCoordinateToSave = 5;
+	
+	private static Coordinate[][] coordinates = new Coordinate[nrOfCoordinateToSave][nrOfCoordinateToSave];
+	
+	public static void setNrOfCoordinatesToSave(int nr){
+		nrOfCoordinateToSave = nr;
+		coordinates = new Coordinate[nrOfCoordinateToSave][nrOfCoordinateToSave];
+	}
+	
 	/**
 	 * Position coordinates values
 	 */
-	private final int x, y;
+	public final int x, y;
 	
 	/**
 	 * Initiates an instance with the given coordinates.
@@ -20,27 +30,30 @@ public class Coordinate {
 	 * @param y The vertical coordinate value
 	 * @throws IllegalArgumentException if either coordinate has a negative value
 	 */
-	public Coordinate(int x, int y) {
+	private Coordinate(int x, int y) {
 		if(x<0 || y<0)
 				throw new IllegalArgumentException("Negative coordinate value");
 		this.x = x;
 		this.y = y;
 	}
 	
-	/**
-	 * Gets the position's horizontal coordinate.
-	 * 
-	 * @return The horizontal coordinate value
-	 */
-	public int getX() {
-		return x;
+	public static Coordinate get(int x, int y){
+		if(x >= 0 && x < nrOfCoordinateToSave && y >= 0 && y < nrOfCoordinateToSave){
+			if(coordinates[x][y] == null){
+				coordinates[x][y] = new Coordinate(x, y);
+			}
+			return coordinates[x][y];
+		}
+		else return new Coordinate(x, y);
 	}
-	/**
-	 * Gets the position's vertical coordinate.
-	 * 
-	 * @return The vertical coordinate value
-	 */
-	public int getY() {
-		return y;
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if(!(obj instanceof Coordinate))
+			return false;
+		Coordinate c = (Coordinate) obj;
+		return c.x == x && c.y == y;
 	}
 }

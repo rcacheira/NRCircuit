@@ -10,29 +10,29 @@ public class DirectionTests {
 
 	@Test
 	public void check_good_initialization() {
-		Direction direction = new Direction(Position.CENTER, Position.UP);
+		Direction direction = Direction.get(Position.CENTER, Position.UP);
 		assertTrue(direction.from == Position.CENTER);
 		assertTrue(direction.to == Position.UP);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void check_bad_initializaton_null_positions(){
-		new Direction(null, null);
+		Direction.get(null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void check_bad_initialization_null_final_position(){
-		new Direction(Position.CENTER, null);
+		Direction.get(Position.CENTER, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void check_bad_initialization_null_initial_position(){
-		new Direction(null, Position.CENTER);
+		Direction.get(null, Position.CENTER);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void check_bad_initialization_same_position(){
-		new Direction(Position.DOWN, Position.DOWN);
+		Direction.get(Position.DOWN, Position.DOWN);
 	}
 
 }
