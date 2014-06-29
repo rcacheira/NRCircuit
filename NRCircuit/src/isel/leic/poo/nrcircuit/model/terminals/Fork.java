@@ -1,8 +1,7 @@
 package isel.leic.poo.nrcircuit.model.terminals;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
+import isel.leic.poo.nrcircuit.model.Place;
+import isel.leic.poo.nrcircuit.model.Position;
 
 /**
  * class whose instance represents a fork.
@@ -22,11 +21,11 @@ public class Fork extends Terminal {
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
-	 * @param coordinate The Fork coordinate
+	 * @param position The Fork position
 	 * @param orientation The Fork orientation
 	 */
-	public Fork(Coordinate coordinate, Orientation orientation) {
-		super(coordinate);
+	public Fork(Position position, Orientation orientation) {
+		super(position);
 		this.orientation = orientation;
 	}
 
@@ -37,41 +36,24 @@ public class Fork extends Terminal {
 		HORIZONTAL_DOWN
 	}
 
-	private boolean checkHorizontalCross(Direction direction, Position branch){
-		if(branch == Position.RIGHT || branch == Position.LEFT)
-			throw new IllegalArgumentException("branch can't be left or right");
-		return direction.from == Position.LEFT && direction.to == Position.RIGHT
-				|| direction.from == Position.RIGHT && direction.to == Position.LEFT
-				|| direction.from == Position.CENTER && direction.to == branch
-				|| direction.to == Position.CENTER && direction.from == branch
-				|| (direction.from == Position.CENTER || direction.from == branch)
-					&& (direction.to == Position.LEFT || direction.to == Position.RIGHT)
-				|| (direction.to == Position.CENTER || direction.to == branch)
-						&& (direction.from == Position.LEFT || direction.from == Position.RIGHT);
+	private boolean checkHorizontalCross(int rDelta, int cDelta){
+		return Math.abs(cDelta) == 1 && rDelta == 0
+				|| cDelta == 0 && rDelta == (orientation == Orientation.HORIZONTAL_UP ? 1 : -1);
 	}
 	
-	private boolean checkVerticalCross(Direction direction, Position branch){
-		if(branch == Position.UP || branch == Position.DOWN)
-			throw new IllegalArgumentException("branch can't be up or down");
-		return direction.from == Position.UP && direction.to == Position.DOWN
-				|| direction.from == Position.DOWN && direction.to == Position.UP
-				|| direction.from == Position.CENTER && direction.to == branch
-				|| direction.to == Position.CENTER && direction.from == branch
-				|| (direction.from == Position.CENTER || direction.from == branch)
-					&& (direction.to == Position.UP || direction.to == Position.DOWN)
-				|| (direction.to == Position.CENTER || direction.to == branch)
-					&& (direction.from == Position.UP || direction.from == Position.DOWN);
+	private boolean checkVerticalCross(int rDelta, int cDelta){
+		return cDelta == 0 && Math.abs(rDelta) == 1
+				|| rDelta == 0 && cDelta == (orientation == Orientation.VERTICAL_RIGHT ? -1 : 1);
 	}
 	
 	@Override
-	public boolean canBeCrossed(Direction direction) {
-		switch(orientation){
-			case HORIZONTAL_UP: return checkHorizontalCross(direction, Position.UP);
-			case HORIZONTAL_DOWN: return checkHorizontalCross(direction, Position.DOWN);
-			case VERTICAL_LEFT: return checkVerticalCross(direction, Position.LEFT);
-			case VERTICAL_RIGHT: return checkVerticalCross(direction, Position.RIGHT);
-		}
-		return false;
+	public boolean canBeLinkedWith(Place place) {
+		int cDelta = position.column - place.position.column;
+		int rDelta = position.row - place.position.row;
+		
+		return orientation == Orientation.HORIZONTAL_DOWN || orientation == Orientation.HORIZONTAL_UP ? 
+				checkHorizontalCross(rDelta, cDelta) : 
+				checkVerticalCross(rDelta, cDelta);
 	}
 	
 	@Override

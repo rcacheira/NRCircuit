@@ -2,9 +2,8 @@ package isel.leic.poo.nrcircuit.model.connectors.tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
+import isel.leic.poo.nrcircuit.model.Position;
+import isel.leic.poo.nrcircuit.model.MockPlace;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 
@@ -12,64 +11,44 @@ import org.junit.Test;
 
 public class OneWayConnectorTests {
 
+	OneWayConnector oneWayConnectorH = new OneWayConnector(Position.get(2, 2), Orientation.HORIZONTAL);
+	OneWayConnector oneWayConnectorV = new OneWayConnector(Position.get(2, 2), Orientation.VERTICAL);
+	
 	@Test
-	public void check_horizontal_good_crossing() {
-		OneWayConnector owc = new OneWayConnector(Coordinate.get(0, 0), Orientation.HORIZONTAL);
-		assertTrue(owc.canBeCrossed(Direction.get(Position.LEFT, Position.RIGHT)));
-		assertTrue(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.LEFT)));
+	public void test_link() {
+		assertTrue(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
+		assertTrue(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
+		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		
+		assertTrue(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
+		assertTrue(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
+		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
 	}
 	
 	@Test
-	public void check_vertical_good_crossing() {
-		OneWayConnector owc = new OneWayConnector(Coordinate.get(0, 0), Orientation.VERTICAL);
-		assertTrue(owc.canBeCrossed(Direction.get(Position.UP, Position.DOWN)));
-		assertTrue(owc.canBeCrossed(Direction.get(Position.DOWN, Position.UP)));
+	public void testEquals(){
+		assertTrue(oneWayConnectorH.equals(oneWayConnectorH));
+		assertTrue(oneWayConnectorH.equals(new OneWayConnector(Position.get(2, 2), Orientation.HORIZONTAL)));
+		assertFalse(oneWayConnectorH.equals(new OneWayConnector(Position.get(2, 2), Orientation.VERTICAL)));
+		assertFalse(oneWayConnectorH.equals(new MockPlace(Position.get(2, 2))));
+		
+		assertTrue(oneWayConnectorV.equals(oneWayConnectorV));
+		assertTrue(oneWayConnectorV.equals(new OneWayConnector(Position.get(2, 2), Orientation.VERTICAL)));
+		assertFalse(oneWayConnectorV.equals(new OneWayConnector(Position.get(2, 2), Orientation.HORIZONTAL)));
+		assertFalse(oneWayConnectorV.equals(new MockPlace(Position.get(2, 2))));
 	}
-	
-	@Test
-	public void check_horizontal_bad_crossing(){
-		OneWayConnector owc = new OneWayConnector(Coordinate.get(0, 0), Orientation.HORIZONTAL);
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.RIGHT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.RIGHT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.RIGHT)));
-	}
-	
-	@Test
-	public void check_vertical_bad_crossing(){
-		OneWayConnector owc = new OneWayConnector(Coordinate.get(0, 0), Orientation.VERTICAL);
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.RIGHT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.UP, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.RIGHT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.DOWN, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.RIGHT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.LEFT, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.RIGHT, Position.CENTER)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.UP)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.DOWN)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.LEFT)));
-		assertFalse(owc.canBeCrossed(Direction.get(Position.CENTER, Position.RIGHT)));
-	}
-
 }

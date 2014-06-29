@@ -20,8 +20,10 @@ public class Path implements Iterable<Place>{
 	private LinkedList<Place> places;
 	
 	public Path(Terminal initialT) {
+		if(initialT == null)
+			throw new IllegalArgumentException("initialT can't be null");
 		this.initialT = initialT;
-		places = new LinkedList<>();
+		places = new LinkedList<Place>();
 		places.add(initialT);
 	}
 	

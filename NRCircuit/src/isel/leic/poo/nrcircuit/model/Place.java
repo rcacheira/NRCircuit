@@ -14,34 +14,33 @@ public abstract class Place {
 	/**
 	 * The instance's position
 	 */
-	protected final Coordinate coordinate;
+	public final Position position;
 	
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
-	 * @param coordinate Place's coordinate
+	 * @param position Place's position
 	 */
-	public Place(Coordinate coordinate) {
-		this.coordinate = coordinate;
+	public Place(Position position) {
+		if(position == null)
+			throw new IllegalArgumentException("position can't be null");
+		this.position = position;
 	}
 	
 	/**
-	 * Gets the place's position
-	 * @return
-	 */
-	public Coordinate getCoordinate() {
-		return coordinate;
-	}
-	
-	/**
-	 * checks if a place can be crossed in one direction
+	 * checks if a place can be linked to other
 	 * 
 	 * @param from initial place side
 	 * @param to final place side
 	 * @return {@code true} if a place can be crossed in given direction, 
 	 * {@code false}, otherwise
 	 */
-	public abstract boolean canBeCrossed(Direction direction);
+	public boolean canBeLinkedWith(Place place) {
+		int cDelta = Math.abs(position.column - place.position.column);
+		int rDelta = Math.abs(position.row - place.position.row);
+		
+		return cDelta + rDelta == 1;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -51,7 +50,7 @@ public abstract class Place {
 			return false;
 		Place p = (Place)obj;
 		
-		return p.getCoordinate().equals(coordinate);
+		return p.position.equals(position);
 	}
 	
 }

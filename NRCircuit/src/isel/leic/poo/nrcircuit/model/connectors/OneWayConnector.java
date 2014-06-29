@@ -1,8 +1,7 @@
 package isel.leic.poo.nrcircuit.model.connectors;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
+import isel.leic.poo.nrcircuit.model.Place;
+import isel.leic.poo.nrcircuit.model.Position;
 
 /**
  * class whose instance represents a path passage point in only on direction, 
@@ -31,11 +30,11 @@ public class OneWayConnector extends Connector {
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
-	 * @param coordinate The OneWayConnector coordinate
-	 * @param orientation The OneWayConnector oritentation
+	 * @param position The OneWayConnector position
+	 * @param orientation The OneWayConnector orientation
 	 */
-	public OneWayConnector(Coordinate coordinate, Orientation orientation) {
-		super(coordinate);
+	public OneWayConnector(Position position, Orientation orientation) {
+		super(position);
 		this.orientation = orientation;
 	}
 	
@@ -48,16 +47,14 @@ public class OneWayConnector extends Connector {
 	}
 	
 	@Override
-	public boolean canBeCrossed(Direction direction) {
-		switch(orientation){
-			case HORIZONTAL:
-				return direction.from == Position.LEFT && direction.to == Position.RIGHT || 
-						direction.from == Position.RIGHT && direction.to == Position.LEFT;
-			case VERTICAL:
-				return direction.from == Position.UP && direction.to == Position.DOWN || 
-						direction.from == Position.DOWN && direction.to == Position.UP;
-		}
-		return false;
+	public boolean canBeLinkedWith(Place place) {
+
+		int cDelta = Math.abs(position.column - place.position.column);
+		int rDelta = Math.abs(position.row - place.position.row);
+		
+		return orientation == Orientation.HORIZONTAL ? 
+				cDelta == 1 && rDelta == 0 : 
+				cDelta == 0 && rDelta == 1;
 	}
 	
 	@Override

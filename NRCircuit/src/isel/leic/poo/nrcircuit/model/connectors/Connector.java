@@ -1,8 +1,6 @@
 package isel.leic.poo.nrcircuit.model.connectors;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
+import isel.leic.poo.nrcircuit.model.Position;
 import isel.leic.poo.nrcircuit.model.Place;
 
 /**
@@ -16,15 +14,10 @@ public class Connector extends Place {
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
-	 * @param coordinate The Connector coordinate
+	 * @param position The Connector position
 	 */
-	public Connector(Coordinate coordinate) {
-		super(coordinate);
-	}
-
-	@Override
-	public boolean canBeCrossed(Direction direction) {
-		return direction.from != Position.CENTER && direction.to != Position.CENTER;
+	public Connector(Position position) {
+		super(position);
 	}
 
 	@Override

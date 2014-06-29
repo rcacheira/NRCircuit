@@ -28,12 +28,12 @@ public class Grid {
 	/**
 	 * Horizontal number of places
 	 */
-	private final int width;
+	private final int columns;
 	
 	/**
 	 * Vertical number of places
 	 */
-	private final int height;
+	private final int rows;
 	
 	/**
 	 * Array of places
@@ -59,10 +59,10 @@ public class Grid {
 	 */
 	private Grid(int level, int width, int height) {
 		this.level = level;
-		this.width = width;
-		this.height = height;
+		this.columns = width;
+		this.rows = height;
 		
-		grid = new Place[width][height];
+		grid = new Place[height][width];
 		paths = new ArrayList<Path>(10);
 		
 		workingPath = null;
@@ -71,32 +71,34 @@ public class Grid {
 	/**
 	 * Verifies if coordinate is in bounds
 	 * 
-	 * @param coordinate Coordinate of Place
+	 * @param position Coordinate of Place
 	 * @return {@code true} if either x and y is greater or equal to zero 
 	 * and x is less then width and y is less than height {@code false} otherwise
 	 */
-	private boolean isCoordinateWithinBounds(Coordinate coordinate)
+	private boolean isCoordinateWithinBounds(Position position)
 	{
-		return !(coordinate.x < 0 || coordinate.x >= width || coordinate.y < 0 || coordinate.y >= height);
+		return !(position.column < 0 || position.column >= columns || position.row < 0 || position.row >= rows);
 	}
 	
-	public Place getPlaceAtPosition(Coordinate coordinate){
-		if(!isCoordinateWithinBounds(coordinate))
+	public Place getPlaceAtPosition(Position position){
+		if(!isCoordinateWithinBounds(position))
 			throw new IllegalArgumentException();
 		
-		return grid[coordinate.x][coordinate.y];
+		return grid[position.row][position.column];
 	}
 	
-	public boolean setWorkingPath(Coordinate coordinate, Direction direction){
-		Place place = getPlaceAtPosition(coordinate);
+	public boolean setWorkingPath(Position position){
+		Place place = getPlaceAtPosition(position);
+		if(place instanceof ProhibitedPlace)
+			return false;
 		for (Path path : paths) {
-			if(path.hasPlace(place) && place.canBeCrossed(direction)){
+			if(path.hasPlace(place)){
 				workingPath = path;
 				workingPath.clear(place);
 				return true;
 			}
 		}
-		if(place instanceof Terminal && place.canBeCrossed(direction)){
+		if(place instanceof Terminal){
 			workingPath = new Path((Terminal)place);
 			paths.add(workingPath);
 			return true;
@@ -104,65 +106,54 @@ public class Grid {
 		return false;
 	}
 	
-	public boolean doCross(Coordinate coordinate, Direction direction){
-		if(!isCoordinateWithinBounds(coordinate))
-			throw new IllegalArgumentException();
+	public boolean doLink(Position position){
+		Place place = getPlaceAtPosition(position);
 		
-		if(workingPath == null || workingPath.isFull())
+		if(place instanceof ProhibitedPlace || workingPath == null 
+				|| workingPath.isFull()
+				|| place instanceof Terminal 
+					&& ((Terminal) place).getLetter() != workingPath.getLetter())
 			return false;
 		
-		Place place = workingPath.getLastPlace();
+		Place lastPlace = workingPath.getLastPlace();
 		
-		int xDelta = Math.abs(place.coordinate.x - coordinate.x);
-		int yDelta = Math.abs(place.coordinate.y - coordinate.y);
-		
-		if(!(xDelta == 1 && yDelta == 0 || xDelta == 0 && yDelta == 1) )
-			throw new IllegalStateException();
-		
-		if(place instanceof Terminal && ((Terminal) place).getLetter() != workingPath.getLetter())
-			return false;
-		
-		if(getPlaceAtPosition(coordinate) instanceof ProhibitedPlace){
+		if(!lastPlace.canBeLinkedWith(place)){
 			return false;
 		}
 		
-		if(!getPlaceAtPosition(coordinate).canBeCrossed(direction)){
-			return false;
-		}
-		
-		workingPath.add(getPlaceAtPosition(coordinate));
+		workingPath.add(place);
 		
 		return true;
 	}
 	
-	public int getHeight() {
-		return height;
+	public int getRows() {
+		return rows;
 	}
 	
 	public int getLevel() {
 		return level;
 	}
 	
-	public int getWidth() {
-		return width;
+	public int getColumns() {
+		return columns;
 	}
 	
 	public int getSize(){
-		return width*height;
+		return columns*rows;
 	}
 	
 	public boolean isComplete(){
-		boolean[][] crossed = new boolean[width][height];
+		boolean[][] linked = new boolean[rows][columns];
 		
 		for (Path path : paths) {
 			for (Place place : path) {
-				crossed[place.coordinate.x][place.coordinate.y] = true;
+				linked[place.position.row][place.position.column] = true;
 			}
 		}
-	
-		for (int i = 0; i < crossed.length; i++) {
-			for (int j = 0; j < crossed[i].length; j++) {
-				if(!crossed[i][j] && !(grid[i][j] instanceof ProhibitedPlace)){
+		
+		for (int row = 0; row < linked.length; row++) {
+			for (int column = 0; column < linked[row].length; column++) {
+				if(!linked[row][column] && !(grid[row][column] instanceof ProhibitedPlace)){
 					return false;
 				}
 			}
@@ -196,34 +187,34 @@ public class Grid {
 		return new Grid(level, width, height);
 	}
 	
-	private static Place createPlace(int line, int column, String prmtr) throws FileBadFormatException{
+	private static Place createPlace(int row, int column, String prmtr) throws FileBadFormatException{
 		if(prmtr.equals(".")){
-			return new Connector(Coordinate.get(line, column));
+			return new Connector(Position.get(row, column));
 		}
 		if(prmtr.equals("|")){
-			return new OneWayConnector(Coordinate.get(line, column), Orientation.VERTICAL);
+			return new OneWayConnector(Position.get(row, column), Orientation.VERTICAL);
 		}
 		if(prmtr.equals("-")){
-			return new OneWayConnector(Coordinate.get(line, column), Orientation.HORIZONTAL);
+			return new OneWayConnector(Position.get(row, column), Orientation.HORIZONTAL);
 		}
 		if(prmtr.equals("*")){
-			return new ProhibitedPlace(Coordinate.get(line, column));
+			return new ProhibitedPlace(Position.get(row, column));
 		}
 		if(prmtr.length() == 1 && (prmtr.charAt(0) >= 'A' && prmtr.charAt(0) <= 'Z'
 				|| prmtr.charAt(0) >= 'a' && prmtr.charAt(0) <= 'z')){
-			return new FinalTerminal(Coordinate.get(line, column), prmtr.toUpperCase().charAt(0));
+			return new FinalTerminal(Position.get(row, column), prmtr.charAt(0));
 		}
-		throw new FileBadFormatException("line: " + line+1 + " unsupported parameter: " + prmtr);
+		throw new FileBadFormatException("line: " + row+1 + " unsupported parameter: " + prmtr);
 	}
 	
-	private static void loadLineGrid(Grid grid, int lineLoading, String line) throws FileBadFormatException{
+	private static void loadLineGrid(Grid grid, int row, String line) throws FileBadFormatException{
 		String[] prmtrs = line.split(" ");
-		if(prmtrs.length != grid.width){
-			throw new FileBadFormatException("line: " + lineLoading+1 + " less parameters then width");
+		if(prmtrs.length != grid.columns){
+			throw new FileBadFormatException("line: " + row+1 + " less parameters then columns");
 		}
 		int prmtrIdx = 0;
 		for (int i = 0; i < prmtrs.length; i++) {
-			grid.grid[lineLoading][prmtrIdx] = createPlace(lineLoading, prmtrIdx, prmtrs[i]);
+			grid.grid[row][prmtrIdx] = createPlace(row, prmtrIdx, prmtrs[i]);
 			prmtrIdx++;
 		}
 	}
@@ -238,17 +229,17 @@ public class Grid {
 		
 		grid = loadLevelAndSize(line);
 		
-		int nLines = 0;
+		int nRows = 0;
 		
 		while( (line=bufReader.readLine()) != null )
 		{
-			if(nLines >= grid.height){
-				throw new FileBadFormatException("More lines on file than height");
+			if(nRows >= grid.rows){
+				throw new FileBadFormatException("More rows on file than rows size");
 			}
-			loadLineGrid(grid, nLines++, line);
+			loadLineGrid(grid, nRows++, line);
 		}
-		if(nLines < grid.width){
-			throw new FileBadFormatException("Less lines on file than height");
+		if(nRows < grid.columns){
+			throw new FileBadFormatException("Less rows on file than rows size");
 		}
 		
 		return grid;

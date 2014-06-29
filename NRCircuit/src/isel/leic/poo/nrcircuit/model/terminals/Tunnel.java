@@ -1,8 +1,6 @@
 package isel.leic.poo.nrcircuit.model.terminals;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
+import isel.leic.poo.nrcircuit.model.Position;
 
 /**
  * class whose instance represents a tunnel to other side of board.
@@ -24,16 +22,10 @@ public class Tunnel extends Terminal {
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
-	 * @param coordinate the Tunnel Coordinate
+	 * @param position the Tunnel position
 	 */
-	public Tunnel(Coordinate coordinate) {
-		super(coordinate);
-	}
-	
-	@Override
-	public boolean canBeCrossed(Direction direction) {
-		return direction.from == Position.CENTER ||
-				direction.to == Position.CENTER;
+	public Tunnel(Position position) {
+		super(position);
 	}
 	
 	/**

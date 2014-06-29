@@ -1,39 +1,31 @@
 package isel.leic.poo.nrcircuit.model.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import isel.leic.poo.nrcircuit.model.MockPlace;
+import isel.leic.poo.nrcircuit.model.Position;
+import isel.leic.poo.nrcircuit.model.ProhibitedPlace;
 
 import org.junit.Test;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
-import isel.leic.poo.nrcircuit.model.ProhibitedPlace;
-
 public class ProhibitedPlaceTests {
+
+	ProhibitedPlace prohibitedPlace = new ProhibitedPlace(Position.get(2, 2));
 	
 	@Test
-	public void check_that_cannot_be_crossed(){
-		ProhibitedPlace p1 = new ProhibitedPlace(Coordinate.get(0, 0));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.UP, Position.DOWN)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.UP, Position.LEFT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.UP, Position.RIGHT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.UP, Position.CENTER)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.DOWN, Position.UP)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.DOWN, Position.LEFT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.DOWN, Position.RIGHT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.DOWN, Position.CENTER)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.LEFT, Position.UP)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.LEFT, Position.DOWN)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.LEFT, Position.RIGHT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.LEFT, Position.CENTER)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.RIGHT, Position.UP)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.RIGHT, Position.DOWN)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.RIGHT, Position.LEFT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.RIGHT, Position.CENTER)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.CENTER, Position.UP)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.CENTER, Position.DOWN)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.CENTER, Position.LEFT)));
-		assertFalse(p1.canBeCrossed(Direction.get(Position.CENTER, Position.RIGHT)));
+	public void test_link(){
+		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(2, 2))));
+		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(2, 0))));
+		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
+		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
 	}
 
+	@Test
+	public void testEquals(){
+		assertTrue(prohibitedPlace.equals(prohibitedPlace));
+		assertTrue(prohibitedPlace.equals(new ProhibitedPlace(Position.get(2, 2))));
+		assertFalse(prohibitedPlace.equals(new MockPlace(Position.get(2, 2))));
+	}
+	
 }

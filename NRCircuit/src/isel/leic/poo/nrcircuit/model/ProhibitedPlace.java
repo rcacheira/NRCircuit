@@ -1,5 +1,6 @@
 package isel.leic.poo.nrcircuit.model;
 
+
 /**
  * class whose instance represents a forbidden passage
  * 
@@ -11,15 +12,20 @@ public class ProhibitedPlace extends Place {
 	/**
 	 * initiates an instance with the given parameters
 	 * 
-	 * @param coordinate The Prohibited Place coordinate
+	 * @param position The Prohibited Place position
 	 */
-	public ProhibitedPlace(Coordinate coordinate) {
-		super(coordinate);
+	public ProhibitedPlace(Position position) {
+		super(position);
 	}
 
 	@Override
-	public boolean canBeCrossed(Direction direction) {
+	public boolean canBeLinkedWith(Place place) {
 		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) && obj instanceof ProhibitedPlace;
 	}
 	
 }

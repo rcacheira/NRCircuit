@@ -1,7 +1,7 @@
 package isel.leic.poo.nrcircuit.model.terminals;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
 import isel.leic.poo.nrcircuit.model.Place;
+import isel.leic.poo.nrcircuit.model.Position;
 
 /**
  * class whose instance represents the initial or final position of a path
@@ -16,8 +16,8 @@ public abstract class Terminal extends Place {
 	 * 
 	 * @param position The terminal position
 	 */
-	public Terminal(Coordinate coordinate) {
-		super(coordinate);
+	public Terminal(Position position) {
+		super(position);
 	}
 	
 	public abstract char getLetter();

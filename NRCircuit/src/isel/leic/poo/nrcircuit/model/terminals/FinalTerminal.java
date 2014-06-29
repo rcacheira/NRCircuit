@@ -1,8 +1,6 @@
 package isel.leic.poo.nrcircuit.model.terminals;
 
-import isel.leic.poo.nrcircuit.model.Coordinate;
-import isel.leic.poo.nrcircuit.model.Direction;
-import isel.leic.poo.nrcircuit.model.Direction.Position;
+import isel.leic.poo.nrcircuit.model.Position;
 
 /**
  * class whose instance represents a color terminal
@@ -17,17 +15,11 @@ public class FinalTerminal extends Terminal {
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
-	 * @param coordinate The FinalTerminal coordinate
+	 * @param position The FinalTerminal position
 	 */
-	public FinalTerminal(Coordinate coordinate, char letter) {
-		super(coordinate);
+	public FinalTerminal(Position position, char letter) {
+		super(position);
 		this.letter = letter;
-	}
-
-	@Override
-	public boolean canBeCrossed(Direction direction) {
-		return direction.from == Position.CENTER ||
-				direction.to == Position.CENTER;
 	}
 	
 	@Override
