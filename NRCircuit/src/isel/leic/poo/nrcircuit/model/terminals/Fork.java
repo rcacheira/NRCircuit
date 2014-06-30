@@ -38,18 +38,18 @@ public class Fork extends Terminal {
 
 	private boolean checkHorizontalCross(int rDelta, int cDelta){
 		return Math.abs(cDelta) == 1 && rDelta == 0
-				|| cDelta == 0 && rDelta == (orientation == Orientation.HORIZONTAL_UP ? 1 : -1);
+				|| cDelta == 0 && rDelta == (orientation == Orientation.HORIZONTAL_UP ? -1 : 1);
 	}
 	
 	private boolean checkVerticalCross(int rDelta, int cDelta){
 		return cDelta == 0 && Math.abs(rDelta) == 1
-				|| rDelta == 0 && cDelta == (orientation == Orientation.VERTICAL_RIGHT ? -1 : 1);
+				|| rDelta == 0 && cDelta == (orientation == Orientation.VERTICAL_RIGHT ? 1 : -1);
 	}
 	
 	@Override
-	public boolean canBeLinkedWith(Place place) {
-		int cDelta = position.column - place.position.column;
-		int rDelta = position.row - place.position.row;
+	public boolean canBeLinkedTo(Place place) {
+		int cDelta = place.position.column - position.column;
+		int rDelta = place.position.row - position.row;
 		
 		return orientation == Orientation.HORIZONTAL_DOWN || orientation == Orientation.HORIZONTAL_UP ? 
 				checkHorizontalCross(rDelta, cDelta) : 

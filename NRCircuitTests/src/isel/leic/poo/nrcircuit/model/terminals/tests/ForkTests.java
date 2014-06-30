@@ -18,49 +18,49 @@ public class ForkTests {
 	
 	@Test
 	public void test_link() {
-		assertTrue(forkHU.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertTrue(forkHU.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertTrue(forkHU.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(forkHU.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertTrue(forkHU.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertTrue(forkHU.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertTrue(forkHU.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(forkHU.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
 		
-		assertTrue(forkHD.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertTrue(forkHD.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertTrue(forkHD.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(forkHD.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertTrue(forkHD.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertTrue(forkHD.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertTrue(forkHD.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(forkHD.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
 		
-		assertTrue(forkVR.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertTrue(forkVR.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertTrue(forkVR.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(forkVR.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertTrue(forkVR.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertTrue(forkVR.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertTrue(forkVR.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(forkVR.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
 		
-		assertTrue(forkVL.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertTrue(forkVL.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertTrue(forkVL.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(forkVL.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertTrue(forkVL.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertTrue(forkVL.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertTrue(forkVL.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(forkVL.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
 	}
 	
 	@Test

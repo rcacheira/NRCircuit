@@ -37,14 +37,14 @@ public class Position {
 		this.row = row;
 	}
 	
-	public static Position get(int column, int line){
-		if(column >= 0 && column < positionsToSave && line >= 0 && line < positionsToSave){
-			if(positions[column][line] == null){
-				positions[column][line] = new Position(column , line);
+	public static Position get(int row, int column){
+		if(column >= 0 && column < positionsToSave && row >= 0 && row < positionsToSave){
+			if(positions[row][column] == null){
+				positions[row][column] = new Position(row , column);
 			}
-			return positions[column][line];
+			return positions[row][column];
 		}
-		else return new Position(column, line);
+		else return new Position(row, column);
 	}
 	
 	public boolean equals(Object obj) {

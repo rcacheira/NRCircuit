@@ -9,14 +9,11 @@ public class TileFinalTerminal extends Tile {
 	
 	public TileFinalTerminal(CircuitView parent, RectF bounds, char letter) {
 		super(parent, bounds);
-		
 		brush.setColor(Tile.getLetterColor(letter));
 	}
 
 	@Override
-	public void doDraw(Canvas canvas) {
-		super.doDraw(canvas);
-		
+	public void drawTile(Canvas canvas) {
 		canvas.drawCircle(bounds.centerX(), bounds.centerY(), strokeWidth, brush);
 		canvas.drawCircle(bounds.centerX(), bounds.centerY(), strokeWidth/2, backgroundBrush);
 	}

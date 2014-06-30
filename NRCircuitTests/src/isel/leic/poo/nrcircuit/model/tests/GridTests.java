@@ -82,9 +82,19 @@ public class GridTests {
 		
 		assertFalse(grid.setWorkingPath(Position.get(0, 1)));
 		assertFalse(grid.doLink(Position.get(0, 1)));
+		
 		assertFalse(grid.isComplete());
 		
 		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		assertTrue(grid.doLink(Position.get(0, 1)));
+		assertTrue(grid.doLink(Position.get(0, 2)));
+		
+		assertFalse(grid.isComplete());
+		
+		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		
+		assertFalse(grid.isComplete());
+		
 		assertTrue(grid.doLink(Position.get(0, 1)));
 		assertTrue(grid.doLink(Position.get(0, 2)));
 		assertFalse(grid.doLink(Position.get(0, 2)));

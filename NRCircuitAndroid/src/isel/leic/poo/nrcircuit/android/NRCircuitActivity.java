@@ -1,4 +1,5 @@
 package isel.leic.poo.nrcircuit.android;
+
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
 
@@ -18,7 +19,7 @@ public class NRCircuitActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nrcircuit);
 		
-		CircuitView gridView = (CircuitView) findViewById(R.id.gridView);
+		CircuitView circuitView = (CircuitView) findViewById(R.id.circuitView);
 		
 		int fileId = getResources().getIdentifier("raw/level1", null, this.getPackageName());
 		
@@ -28,8 +29,8 @@ public class NRCircuitActivity extends Activity {
 		
 		try {
 			nrCircuitController = (savedInstanceState != null) ?
-					NRCircuitController.createController(gridView, reader, savedInstanceState) :
-					NRCircuitController.createController(gridView, reader);
+					NRCircuitController.createController(circuitView, reader, savedInstanceState) :
+					NRCircuitController.createController(circuitView, reader);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

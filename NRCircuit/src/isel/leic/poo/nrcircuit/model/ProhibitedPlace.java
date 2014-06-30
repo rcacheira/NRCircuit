@@ -19,7 +19,7 @@ public class ProhibitedPlace extends Place {
 	}
 
 	@Override
-	public boolean canBeLinkedWith(Place place) {
+	public boolean canBeLinkedTo(Place place) {
 		return false;
 	}
 

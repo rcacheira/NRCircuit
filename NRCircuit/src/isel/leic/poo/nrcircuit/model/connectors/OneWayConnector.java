@@ -47,10 +47,10 @@ public class OneWayConnector extends Connector {
 	}
 	
 	@Override
-	public boolean canBeLinkedWith(Place place) {
+	public boolean canBeLinkedTo(Place place) {
 
-		int cDelta = Math.abs(position.column - place.position.column);
-		int rDelta = Math.abs(position.row - place.position.row);
+		int cDelta = Math.abs(place.position.column - position.column);
+		int rDelta = Math.abs(place.position.row - position.row);
 		
 		return orientation == Orientation.HORIZONTAL ? 
 				cDelta == 1 && rDelta == 0 : 

@@ -16,27 +16,27 @@ public class OneWayConnectorTests {
 	
 	@Test
 	public void test_link() {
-		assertTrue(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertTrue(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(oneWayConnectorH.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertTrue(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertTrue(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(oneWayConnectorH.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
 		
-		assertTrue(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertTrue(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(oneWayConnectorV.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
+		assertTrue(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertTrue(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(oneWayConnectorV.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
 	}
 	
 	@Test

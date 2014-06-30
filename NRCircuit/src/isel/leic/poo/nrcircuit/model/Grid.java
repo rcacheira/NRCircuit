@@ -20,6 +20,10 @@ import java.util.List;
  *
  */
 public class Grid {
+	public static interface OnPlacesRemovedFromPathListener{
+		public void onPlacesRemovedFromPath(List<Place> placesRemoved);
+	}
+	
 	/**
 	 * grid level
 	 */
@@ -49,6 +53,13 @@ public class Grid {
 	 * Path being draw
 	 */
 	private Path workingPath;
+	
+	private OnPlacesRemovedFromPathListener placesRemovedFromPathListener;
+	
+	public void setPlacesRemovedFromPathListener(
+			OnPlacesRemovedFromPathListener placesRemovedFromPathListener) {
+		this.placesRemovedFromPathListener = placesRemovedFromPathListener;
+	}
 	
 	/**
 	 * Creates a new instance of grid with the given parameters
@@ -87,17 +98,25 @@ public class Grid {
 		return grid[position.row][position.column];
 	}
 	
+	private void clearPaths(Place place){
+		ArrayList<Place> placesRemoved = new ArrayList<Place>();
+		for (Path path : paths) {
+			if(path.hasPlace(place)){
+				workingPath = path;
+				placesRemoved.addAll(path.clear(place));
+			}
+		}
+
+		if(placesRemovedFromPathListener != null){
+			placesRemovedFromPathListener.onPlacesRemovedFromPath(placesRemoved);
+		}
+	}
+	
 	public boolean setWorkingPath(Position position){
 		Place place = getPlaceAtPosition(position);
 		if(place instanceof ProhibitedPlace)
 			return false;
-		for (Path path : paths) {
-			if(path.hasPlace(place)){
-				workingPath = path;
-				workingPath.clear(place);
-				return true;
-			}
-		}
+		clearPaths(place);
 		if(place instanceof Terminal){
 			workingPath = new Path((Terminal)place);
 			paths.add(workingPath);
@@ -117,10 +136,11 @@ public class Grid {
 		
 		Place lastPlace = workingPath.getLastPlace();
 		
-		if(!lastPlace.canBeLinkedWith(place)){
+		if(!lastPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(lastPlace)){
 			return false;
 		}
-		
+
+		clearPaths(place);
 		workingPath.add(place);
 		
 		return true;
@@ -140,6 +160,10 @@ public class Grid {
 	
 	public int getSize(){
 		return columns*rows;
+	}
+
+	public Path getWorkingPath() {
+		return workingPath;
 	}
 	
 	public boolean isComplete(){

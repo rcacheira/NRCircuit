@@ -6,10 +6,10 @@
     tools:context=".NRCircuitActivity" >
 
     <isel.leic.poo.nrcircuit.android.views.CircuitView
-        android:id="@+id/gridView"
+        android:id="@+id/circuitView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

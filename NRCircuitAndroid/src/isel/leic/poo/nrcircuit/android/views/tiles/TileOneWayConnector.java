@@ -1,12 +1,11 @@
 package isel.leic.poo.nrcircuit.android.views.tiles;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import isel.leic.poo.nrcircuit.android.common.Tile;
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.RectF;
 
 public class TileOneWayConnector extends Tile {
 
@@ -17,13 +16,11 @@ public class TileOneWayConnector extends Tile {
 		this.orientation = orientation;
 		
 		brush.setColor(Color.GRAY);
-		brush.setStyle(Paint.Style.FILL);
 		brush.setStrokeWidth(strokeWidth);
 	}
 
 	@Override
-	public void doDraw(Canvas canvas) {
-		super.doDraw(canvas);
+	public void drawTile(Canvas canvas) {
 		
 		float startX = bounds.left;
 		float startY = bounds.top;

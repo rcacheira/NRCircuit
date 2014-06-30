@@ -1,17 +1,28 @@
 package isel.leic.poo.nrcircuit.android.views;
 
 import isel.leic.poo.nrcircuit.android.common.Tile;
+import isel.leic.poo.nrcircuit.android.common.Tile.Link;
+import isel.leic.poo.nrcircuit.android.common.TileActionEvent;
+import isel.leic.poo.nrcircuit.android.common.TileActionEvent.TileEvent;
 import isel.leic.poo.nrcircuit.android.common.TileFactory;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class CircuitView extends View {
-
+	
+	public static interface OnTileActionListener {
+		public void onTileAction(TileActionEvent evt);
+	}
+	
+	private OnTileActionListener tileActionListener;
+	
 	private static final int DEFAULT_TILE_COUNT = 5;
 	
 	private static final String NAMESPACE = "http://schemas.android.com/apk/res-auto";
@@ -41,9 +52,42 @@ public class CircuitView extends View {
 		super(context, attrs, defStyle);
 		initBrushes(context, attrs);
 		
+		setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if(event.getPointerId(0) != 0 || event.getActionIndex() != 0
+						|| !isCoordsWithinBounds(event.getX(0), event.getY(0))){
+					return false;
+				}
+				int row = getRow(event.getY(0));
+				int column = getColumn(event.getX(0));
+				switch(event.getAction()){
+					case MotionEvent.ACTION_DOWN:
+						fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_TOUCH, row, column));
+						return true;
+					case MotionEvent.ACTION_MOVE:
+						fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_LINK, row, column));
+						return true;
+				}
+				return false;
+			}
+		});
+		
 		horizontalTileCount = attrs.getAttributeIntValue(NAMESPACE, INITIAL_HORIZONTAL_TILE_COUNT_ATTR, DEFAULT_TILE_COUNT);
 		verticalTileCount = attrs.getAttributeIntValue(NAMESPACE, INITIAL_VERTICAL_TILE_COUNT_ATTR, DEFAULT_TILE_COUNT);
 		tileFactory = null;
+	}
+	
+	private int getColumn(float x){
+		return (int)(x/tileWidth);
+	}
+	
+	private int getRow(float y){
+		return (int)(y/tileHeight);
+	}
+	
+	private boolean isCoordsWithinBounds(float x, float y){
+		return x>=0 && x<=horizontalTileCount*tileWidth && y>=0 && y<=verticalTileCount*tileHeight;
 	}
 	
 	private void initBrushes(Context context, AttributeSet attrs) 
@@ -54,6 +98,42 @@ public class CircuitView extends View {
 		backgroundBrush.setAlpha(100);
 
 		setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+	}
+	
+	private Rect getTileRect(int row, int column){
+		float left = column * tileWidth;
+		float top = row * tileHeight;
+		return new Rect((int)left, (int)top, (int)left+tileWidth, (int)top+tileHeight);
+	}
+	
+	private RectF getTileBounds(int row, int column){
+		float left = column * tileWidth;
+		float top = row * tileHeight;
+		return new RectF((int)left, (int)top, (int)left+tileWidth, (int)top+tileHeight);
+	}
+	
+	public void setLink(int startRow, int startColumn, int stopRow, int stopColumn, char letter){
+		int cDelta = stopColumn - startColumn;
+		int rDelta = stopRow - startRow;
+		
+		tiles[startRow][startColumn].setLink(cDelta != 0 ? 
+				cDelta < 1 ? Link.LEFT : Link.RIGHT : 
+				rDelta < 1 ? Link.TOP : Link.BOTTOM , 
+				letter);
+		
+		tiles[stopRow][stopColumn].setLink(cDelta != 0 ? 
+				cDelta < 1 ? Link.RIGHT : Link.LEFT : 
+				rDelta < 1 ? Link.BOTTOM : Link.TOP , 
+				letter);
+		
+		invalidate(getTileRect(startRow, startColumn));
+		invalidate(getTileRect(stopRow, stopColumn));
+	}
+	
+	public void clearLink(int row, int column){
+		if(tiles[row][column].clearLinks()){
+			invalidate(getTileRect(row, column));
+		}
 	}
 	
 	public void setTileCount(int horizontalTileCount, int verticalTileCount){
@@ -68,18 +148,25 @@ public class CircuitView extends View {
 		
 		tiles = new Tile[horizontalTileCount][verticalTileCount];
 		
-		for(int row = 0; row < horizontalTileCount; ++row)
+		for(int row = 0; row < verticalTileCount; ++row)
 		{
-			for(int column = 0; column < verticalTileCount; ++column)
+			for(int column = 0; column < horizontalTileCount; ++column)
 			{
-				int currentLeft = column * tileWidth;
-				int currentTop = row * tileHeight;
 				tiles[row][column] = tileFactory.createTile(row, column, this, 
-						new RectF(currentLeft, currentTop, currentLeft + tileWidth, currentTop + tileHeight));
+						getTileBounds(row, column));
 			}
 		}
 	}
+
+	public void setTileActionListener(OnTileActionListener tileActionListener){
+		this.tileActionListener = tileActionListener;
+	}
 	
+	private void fireOnTileTouchEvent(TileActionEvent evt)
+	{
+		if(tileActionListener != null)
+			tileActionListener.onTileAction(evt);
+	}
 	
 	public void setTileProvider(TileFactory tileFactory)
 	{

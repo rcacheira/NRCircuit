@@ -14,11 +14,11 @@ public class ProhibitedPlaceTests {
 	
 	@Test
 	public void test_link(){
-		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(2, 2))));
-		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
-		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(2, 0))));
-		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertFalse(prohibitedPlace.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
+		assertFalse(prohibitedPlace.canBeLinkedTo(new MockPlace(Position.get(2, 2))));
+		assertFalse(prohibitedPlace.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
+		assertFalse(prohibitedPlace.canBeLinkedTo(new MockPlace(Position.get(2, 0))));
+		assertFalse(prohibitedPlace.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertFalse(prohibitedPlace.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
 	}
 
 	@Test

@@ -31,18 +31,18 @@ public class PlaceTests {
 
 	@Test
 	public void test_link(){
-		assertTrue(place.canBeLinkedWith(new MockPlace(Position.get(1, 2))));
-		assertTrue(place.canBeLinkedWith(new MockPlace(Position.get(2, 1))));
-		assertTrue(place.canBeLinkedWith(new MockPlace(Position.get(3, 2))));
-		assertTrue(place.canBeLinkedWith(new MockPlace(Position.get(2, 3))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(3, 3))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(0, 0))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(0, 3))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(3, 0))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(4, 2))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(2, 4))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(0, 2))));
-		assertFalse(place.canBeLinkedWith(new MockPlace(Position.get(2, 0))));
+		assertTrue(place.canBeLinkedTo(new MockPlace(Position.get(1, 2))));
+		assertTrue(place.canBeLinkedTo(new MockPlace(Position.get(2, 1))));
+		assertTrue(place.canBeLinkedTo(new MockPlace(Position.get(3, 2))));
+		assertTrue(place.canBeLinkedTo(new MockPlace(Position.get(2, 3))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(3, 3))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(0, 0))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(0, 3))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(3, 0))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(4, 2))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(2, 4))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(0, 2))));
+		assertFalse(place.canBeLinkedTo(new MockPlace(Position.get(2, 0))));
 	}
 	
 }

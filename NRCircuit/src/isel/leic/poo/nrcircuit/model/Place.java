@@ -30,14 +30,13 @@ public abstract class Place {
 	/**
 	 * checks if a place can be linked to other
 	 * 
-	 * @param from initial place side
-	 * @param to final place side
-	 * @return {@code true} if a place can be crossed in given direction, 
+	 * @param place {@link Place} to test link to
+	 * @return {@code true} if a place can be linked to given place, 
 	 * {@code false}, otherwise
 	 */
-	public boolean canBeLinkedWith(Place place) {
-		int cDelta = Math.abs(position.column - place.position.column);
-		int rDelta = Math.abs(position.row - place.position.row);
+	public boolean canBeLinkedTo(Place place) {
+		int cDelta = Math.abs(place.position.column - position.column);
+		int rDelta = Math.abs(place.position.row - position.row);
 		
 		return cDelta + rDelta == 1;
 	}

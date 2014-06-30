@@ -2,8 +2,10 @@ package isel.leic.poo.nrcircuit.model;
 
 import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Class whose instance represents a circuit path
@@ -38,17 +40,22 @@ public class Path implements Iterable<Place>{
 		places.add(place);
 	}
 	
-	public void clear(Place p){
+	public ArrayList<Place> clear(Place p){
+		ArrayList<Place> placesToRemove = new ArrayList<Place>();
 		if(isFull() && finalT.equals(p)){
-			return;
+			placesToRemove.add(finalT);
+			finalT = null;
+			return placesToRemove;
 		}
+		placesToRemove.add(finalT);
 		finalT = null;
 		int finalIdx = places.size();
 		int initialIdx = places.indexOf(p);
 		if(initialIdx < finalIdx-1){
-			places.removeAll(places.subList(initialIdx, finalIdx));
+			placesToRemove.addAll(places.subList(initialIdx, finalIdx));
+			places.removeAll(placesToRemove);
 		}
-		return;
+		return placesToRemove;
 	}
 	
 	public Terminal getInitialT() {

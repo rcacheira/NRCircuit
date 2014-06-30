@@ -9,6 +9,7 @@ import isel.leic.poo.nrcircuit.android.views.tiles.TileOneWayConnector;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileProhibitedPlace;
 import isel.leic.poo.nrcircuit.model.Circuit;
 import isel.leic.poo.nrcircuit.model.Place;
+import isel.leic.poo.nrcircuit.model.Position;
 import isel.leic.poo.nrcircuit.model.ProhibitedPlace;
 import isel.leic.poo.nrcircuit.model.connectors.Connector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
@@ -24,7 +25,7 @@ public class CircuitTileFactory implements TileFactory {
 
 	@Override
 	public Tile createTile(int row, int column, CircuitView parent, RectF tileBounds) {
-		Place place = model.getPlaceAtPosition(row, column);
+		Place place = model.getPlaceAtPosition(Position.get(row, column));
 		
 		if(place instanceof ProhibitedPlace){
 			return new TileProhibitedPlace(parent, tileBounds);
