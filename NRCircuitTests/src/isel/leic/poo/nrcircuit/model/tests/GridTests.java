@@ -76,7 +76,7 @@ public class GridTests {
 	}
 	
 	@Test
-	public void test_link() throws IOException, FileBadFormatException {
+	public void test_link_clear_and_complete() throws IOException, FileBadFormatException {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
@@ -101,6 +101,20 @@ public class GridTests {
 		assertFalse(grid.doLink(Position.get(0, 4)));
 		assertTrue(grid.doLink(Position.get(0, 3)));
 		assertTrue(grid.doLink(Position.get(0, 4)));
+		assertTrue(grid.doLink(Position.get(1, 4)));
+		assertTrue(grid.doLink(Position.get(2, 4)));
+		assertTrue(grid.doLink(Position.get(3, 4)));
+		assertTrue(grid.doLink(Position.get(4, 4)));
+		assertFalse(grid.doLink(Position.get(4, 2)));
+		assertFalse(grid.doLink(Position.get(2, 4)));
+		assertFalse(grid.doLink(Position.get(3, 3)));
+		assertTrue(grid.doLink(Position.get(4, 3)));
+		assertTrue(grid.doLink(Position.get(4, 2)));
+		assertTrue(grid.doLink(Position.get(4, 1)));
+		assertTrue(grid.doLink(Position.get(4, 0)));
+		
+
+		assertTrue(grid.setWorkingPath(Position.get(0, 4)));
 		assertTrue(grid.doLink(Position.get(1, 4)));
 		assertTrue(grid.doLink(Position.get(2, 4)));
 		assertTrue(grid.doLink(Position.get(3, 4)));

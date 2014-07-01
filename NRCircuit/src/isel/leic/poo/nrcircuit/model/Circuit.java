@@ -5,21 +5,14 @@ import isel.leic.poo.nrcircuit.model.Grid.OnPlacesRemovedFromPathListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 
 public class Circuit {
 
-	public static interface OnCircuitFinishedListener{
-		public void onCircuitFinished();
-	}
-	
-	public static interface OnLinkClearListener{
+	public static interface OnCircuitActionListener{
 		public void onLinkClear(int row, int column);
 	}
 	
-	private OnCircuitFinishedListener circuitFinishedListener;
-	
-	private OnLinkClearListener linkClearListener;
+	private OnCircuitActionListener circuitActionListener;
 	
 	private Grid grid;
 	
@@ -27,11 +20,11 @@ public class Circuit {
 		grid = Grid.loadGrid(bufReader);
 		grid.setPlacesRemovedFromPathListener(new OnPlacesRemovedFromPathListener() {
 			@Override
-			public void onPlacesRemovedFromPath(List<Place> placesRemoved) {
-				if(linkClearListener != null){
+			public void onPlacesRemovedFromPath(Iterable<Place> placesRemoved) {
+				if(circuitActionListener != null){
 					for (Place place : placesRemoved) {
 						if(place != null)
-							linkClearListener.onLinkClear(place.position.row, place.position.column);
+							circuitActionListener.onLinkClear(place.position.row, place.position.column);
 					}
 				}
 			}
@@ -43,14 +36,15 @@ public class Circuit {
 	}
 	
 	public boolean doLink(Position position){
-		if(grid.doLink(position)){
-			if(grid.isComplete()){
-				if(circuitFinishedListener != null)
-					circuitFinishedListener.onCircuitFinished();
-			}
-			return true;
-		}
-		return false;
+		return grid.doLink(position);
+	}
+	
+	public boolean isCircuitFinished(){
+		return grid.isComplete();
+	}
+	
+	public Position getLastPlacePosition(){
+		return grid.getWorkingPath().getLastPlace().position;
 	}
 	
 	public char getCurrentLetter(){
@@ -61,11 +55,7 @@ public class Circuit {
 		return grid.getPlaceAtPosition(position);
 	}
 	
-	public void setCircuitFinishedListener(OnCircuitFinishedListener circuitFinishedListener) {
-		this.circuitFinishedListener = circuitFinishedListener;
-	}
-	
-	public void setLinkClearListener(OnLinkClearListener linkClearListener) {
-		this.linkClearListener = linkClearListener;
+	public void setCircuitActionListener(OnCircuitActionListener circuitActionListener) {
+		this.circuitActionListener = circuitActionListener;
 	}
 }

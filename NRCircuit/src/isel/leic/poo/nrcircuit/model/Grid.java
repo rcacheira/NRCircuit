@@ -9,6 +9,7 @@ import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ import java.util.List;
  */
 public class Grid {
 	public static interface OnPlacesRemovedFromPathListener{
-		public void onPlacesRemovedFromPath(List<Place> placesRemoved);
+		public void onPlacesRemovedFromPath(Iterable<Place> placesRemoved);
 	}
 	
 	/**
@@ -74,7 +75,7 @@ public class Grid {
 		this.rows = height;
 		
 		grid = new Place[height][width];
-		paths = new ArrayList<Path>(10);
+		paths = new LinkedList<Path>();
 		
 		workingPath = null;
 	}
@@ -98,17 +99,21 @@ public class Grid {
 		return grid[position.row][position.column];
 	}
 	
-	private void clearPaths(Place place){
-		ArrayList<Place> placesRemoved = new ArrayList<Place>();
+	private Path getPlacePath(Place place){
 		for (Path path : paths) {
 			if(path.hasPlace(place)){
-				workingPath = path;
-				placesRemoved.addAll(path.clear(place));
+				return path;
 			}
 		}
-
-		if(placesRemovedFromPathListener != null){
-			placesRemovedFromPathListener.onPlacesRemovedFromPath(placesRemoved);
+		return null;
+	}
+	
+	private void clearPaths(Place place){
+		for (Path path : paths) {
+			if(path.hasPlace(place)){
+				fireOnPlacesRemovedFromPathEvent(path.clear(place));
+				return;
+			}
 		}
 	}
 	
@@ -116,8 +121,17 @@ public class Grid {
 		Place place = getPlaceAtPosition(position);
 		if(place instanceof ProhibitedPlace)
 			return false;
-		clearPaths(place);
+		Path path = getPlacePath(place);
+		if(path != null  && (place instanceof Connector)){
+			clearPaths(place);
+			workingPath = path;
+			return true;
+		}
 		if(place instanceof Terminal){
+			if(path != null){
+				fireOnPlacesRemovedFromPathEvent(path);
+				paths.remove(path);
+			}
 			workingPath = new Path((Terminal)place);
 			paths.add(workingPath);
 			return true;
@@ -134,6 +148,14 @@ public class Grid {
 					&& ((Terminal) place).getLetter() != workingPath.getLetter())
 			return false;
 		
+		if(place instanceof Terminal){
+			Path path = getPlacePath(place);
+			if(path != null){
+				fireOnPlacesRemovedFromPathEvent(path);
+				paths.remove(path);
+			}
+		}
+		
 		Place lastPlace = workingPath.getLastPlace();
 		
 		if(!lastPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(lastPlace)){
@@ -144,6 +166,12 @@ public class Grid {
 		workingPath.add(place);
 		
 		return true;
+	}
+	
+	void fireOnPlacesRemovedFromPathEvent(Iterable<Place> placesRemoved){
+		if(placesRemovedFromPathListener != null){
+			placesRemovedFromPathListener.onPlacesRemovedFromPath(placesRemoved);
+		}
 	}
 	
 	public int getRows() {

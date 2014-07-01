@@ -42,16 +42,18 @@ public class Path implements Iterable<Place>{
 	
 	public ArrayList<Place> clear(Place p){
 		ArrayList<Place> placesToRemove = new ArrayList<Place>();
-		if(isFull() && finalT.equals(p)){
-			placesToRemove.add(finalT);
-			finalT = null;
+		if(initialT.equals(p) || finalT != null && finalT.equals(p)){
 			return placesToRemove;
 		}
-		placesToRemove.add(finalT);
+//		if((isFull() && finalT.equals(p))){
+//			return placesToRemove;
+//		}
+//		placesToRemove.add(finalT);
+//		finalT = null;
 		finalT = null;
 		int finalIdx = places.size();
 		int initialIdx = places.indexOf(p);
-		if(initialIdx < finalIdx-1){
+		if(initialIdx < finalIdx){
 			placesToRemove.addAll(places.subList(initialIdx, finalIdx));
 			places.removeAll(placesToRemove);
 		}

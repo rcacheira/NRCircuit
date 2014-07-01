@@ -77,20 +77,24 @@ public abstract class Tile {
 		strokeWidth = Math.min(bounds.width(), bounds.height()) / 5;
 	}
 	
+	public boolean hasLinks(){
+		return nLinks > 0;
+	}
+	
 	public void setLink(Link link, char letter){
 		if (nLinks == MAX_LINKS)
-			throw new IllegalStateException();
-		if (nLinks == 0)
+			throw new IllegalStateException("Can't set more than " + MAX_LINKS + " links");
+		if (!hasLinks())
 			this.letter = letter;
 		else
 			if(this.letter != letter)
-				throw new IllegalStateException();
+				throw new IllegalStateException("Link letter different of previous links letter");
 		
 		links[nLinks++] = link;
 	}
 	
 	public boolean clearLinks(){
-		if(nLinks == 0){
+		if(!hasLinks()){
 			return false;
 		}
 		nLinks = 0;

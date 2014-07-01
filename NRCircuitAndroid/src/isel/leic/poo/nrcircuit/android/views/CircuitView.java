@@ -63,7 +63,11 @@ public class CircuitView extends View {
 				int column = getColumn(event.getX(0));
 				switch(event.getAction()){
 					case MotionEvent.ACTION_DOWN:
-						fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_TOUCH, row, column));
+						if(tiles[row][column].hasLinks()){
+							fireOnTileTouchEvent(new TileActionEvent(TileEvent.LINKED_TILE_TOUCH, row, column));
+						}else{
+							fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_TOUCH, row, column));
+						}
 						return true;
 					case MotionEvent.ACTION_MOVE:
 						fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_LINK, row, column));
@@ -112,22 +116,21 @@ public class CircuitView extends View {
 		return new RectF((int)left, (int)top, (int)left+tileWidth, (int)top+tileHeight);
 	}
 	
-	public void setLink(int startRow, int startColumn, int stopRow, int stopColumn, char letter){
-		int cDelta = stopColumn - startColumn;
-		int rDelta = stopRow - startRow;
+	public void setSingleLink(int row, int column, int lastRow, int lastColumn, char letter){
+		int cDelta = lastColumn - column;
+		int rDelta = lastRow - row;
 		
-		tiles[startRow][startColumn].setLink(cDelta != 0 ? 
+		tiles[row][column].setLink(cDelta != 0 ? 
 				cDelta < 1 ? Link.LEFT : Link.RIGHT : 
 				rDelta < 1 ? Link.TOP : Link.BOTTOM , 
 				letter);
 		
-		tiles[stopRow][stopColumn].setLink(cDelta != 0 ? 
-				cDelta < 1 ? Link.RIGHT : Link.LEFT : 
-				rDelta < 1 ? Link.BOTTOM : Link.TOP , 
-				letter);
-		
-		invalidate(getTileRect(startRow, startColumn));
-		invalidate(getTileRect(stopRow, stopColumn));
+		invalidate(getTileRect(row, column));
+	}
+	
+	public void setLink(int startRow, int startColumn, int stopRow, int stopColumn, char letter){
+		setSingleLink(startRow, startColumn, stopRow, stopColumn, letter);
+		setSingleLink(stopRow, stopColumn, startRow, startColumn, letter);
 	}
 	
 	public void clearLink(int row, int column){

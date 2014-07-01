@@ -2,6 +2,8 @@ package isel.leic.poo.nrcircuit.android;
 
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
+import isel.leic.poo.nrcircuit.android.NRCircuitController;
+import isel.leic.poo.nrcircuit.android.NRCircuitController.OnLevelFinishedListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,15 +15,20 @@ import android.os.Bundle;
 public class NRCircuitActivity extends Activity {
 
 	private NRCircuitController nrCircuitController;
+	private CircuitView circuitView;
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_nrcircuit);
+	int level = 1;
+
+	private void createController(CircuitView circuitView, int level, Bundle savedInstanceState){
 		
-		CircuitView circuitView = (CircuitView) findViewById(R.id.circuitView);
+		int fileId = getResources().getIdentifier("raw/level"+level, null, this.getPackageName());
 		
-		int fileId = getResources().getIdentifier("raw/level1", null, this.getPackageName());
+		if(fileId == 0){
+			System.out.println("You have finished all levels!");
+			return;
+		}
+		
+		System.out.println("Loading level " + NRCircuitActivity.this.level + " ... ");
 		
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(
@@ -31,6 +38,15 @@ public class NRCircuitActivity extends Activity {
 			nrCircuitController = (savedInstanceState != null) ?
 					NRCircuitController.createController(circuitView, reader, savedInstanceState) :
 					NRCircuitController.createController(circuitView, reader);
+					
+			nrCircuitController.setOnLevelFinishedListener(new OnLevelFinishedListener(){
+				@Override
+				public void levelFinished() {
+					System.out.println("Level " + NRCircuitActivity.this.level + " Finished !!");
+					NRCircuitActivity.this.level+=1;
+					createController(NRCircuitActivity.this.circuitView, NRCircuitActivity.this.level, null);
+				}
+			});
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,6 +54,17 @@ public class NRCircuitActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_nrcircuit);
+		
+		circuitView = (CircuitView) findViewById(R.id.circuitView);
+		
+		createController(circuitView, level, savedInstanceState);
+		
 	}
 
 }
