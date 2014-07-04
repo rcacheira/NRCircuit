@@ -11,7 +11,7 @@ import isel.leic.poo.nrcircuit.android.views.CircuitTileFactory;
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import isel.leic.poo.nrcircuit.android.views.CircuitView.OnTileActionListener;
 import isel.leic.poo.nrcircuit.android.views.MessageView;
-import isel.leic.poo.nrcircuit.android.viewstate.Paths;
+import isel.leic.poo.nrcircuit.android.viewstate.GridSurrogate;
 import isel.leic.poo.nrcircuit.model.Circuit;
 import isel.leic.poo.nrcircuit.model.Circuit.OnCircuitActionListener;
 import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
@@ -47,7 +47,6 @@ public class NRCircuitController {
 		messageView.setLevel( model.getLevel());
 		
 		this.circuitView = circuitView;
-		this.circuitView.setTileProvider(new CircuitTileFactory(model));
 		this.circuitView.setTileActionListener(new OnTileActionListener() {
 			
 			private int lastRow = 0;
@@ -100,7 +99,7 @@ public class NRCircuitController {
 			}
 
 			@Override
-			public void setLinks() {
+			public void loadAllLinks() {
 				for (Path path : model.getGrid()) {
 					Iterator<Place> it = path.iterator();
 					if(it.hasNext()){
@@ -117,6 +116,7 @@ public class NRCircuitController {
 			
 			
 		});
+		this.circuitView.setTileProvider(new CircuitTileFactory(model));
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class NRCircuitController {
 	 */
 	public void saveState(Bundle stateBundle)
 	{
-		stateBundle.putParcelable(VIEW_STATE_KEY, new Paths(model));
+		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
 	}
 	
 	public void setOnLevelFinishedListener(OnLevelFinishedListener levelFinishedListener){
@@ -140,8 +140,7 @@ public class NRCircuitController {
 	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
 		NRCircuitController controller = new NRCircuitController(circuitView, messageView, gridFile);
 		
-		List<Path> paths = (((Paths) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getPaths(controller.model));
-		controller.model.getGrid().setPaths(paths);
+		controller.model.getGrid().setPaths(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getPaths(controller.model.getGrid()));
 		
 		return controller;
 	}

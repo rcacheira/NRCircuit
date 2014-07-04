@@ -19,7 +19,7 @@ public class CircuitView extends View {
 	
 	public static interface OnTileActionListener {
 		public void onTileAction(TileActionEvent evt);
-		public void setLinks();
+		public void loadAllLinks();
 	}
 	
 	private OnTileActionListener tileActionListener;
@@ -177,7 +177,7 @@ public class CircuitView extends View {
 	private void fireSetLinksEvent()
 	{
 		if(tileActionListener != null)
-			tileActionListener.setLinks();
+			tileActionListener.loadAllLinks();
 	}
 	
 	public void setTileProvider(TileFactory tileFactory)

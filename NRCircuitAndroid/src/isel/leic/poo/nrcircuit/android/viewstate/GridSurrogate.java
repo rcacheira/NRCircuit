@@ -1,6 +1,6 @@
 package isel.leic.poo.nrcircuit.android.viewstate;
 
-import isel.leic.poo.nrcircuit.model.Circuit;
+import isel.leic.poo.nrcircuit.model.Grid;
 import isel.leic.poo.nrcircuit.model.Path;
 
 import java.util.LinkedList;
@@ -9,18 +9,23 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Paths implements Parcelable {
+/**
+ * Class whose instance is used to serialize Grid on Android
+ * 
+ * Because level is now loaded on file, is only needed to parcel Paths
+ */
+public class GridSurrogate implements Parcelable {
 
-	public static final Parcelable.Creator<Paths> CREATOR = new Creator<Paths>() {
+	public static final Parcelable.Creator<GridSurrogate> CREATOR = new Creator<GridSurrogate>() {
 		
 		@Override
-		public Paths[] newArray(int size) {
-			return new Paths[size];
+		public GridSurrogate[] newArray(int size) {
+			return new GridSurrogate[size];
 		}
 		
 		@Override
-		public Paths createFromParcel(Parcel source) {
-			return new Paths(source);
+		public GridSurrogate createFromParcel(Parcel source) {
+			return new GridSurrogate(source);
 		}
 	};
 	
@@ -28,7 +33,7 @@ public class Paths implements Parcelable {
 	
 	private final PathSurrogate[] pathsSur;
 	
-	private Paths(Parcel source) {
+	private GridSurrogate(Parcel source) {
 		pathsSur = PathSurrogate.CREATOR.newArray(source.readInt());
 		for (int i = 0; i < pathsSur.length; i++) {
 			pathsSur[i] = PathSurrogate.CREATOR.createFromParcel(source);
@@ -36,19 +41,19 @@ public class Paths implements Parcelable {
 		paths = null;
 	}
 	
-	public Paths(Circuit circuit){
+	public GridSurrogate(Grid grid){
 		paths = new LinkedList<Path>();
-		for (Path path : circuit.getGrid()) {
+		for (Path path : grid) {
 			paths.add(path);
 		}
 		pathsSur = null;
 	}
 	
-	public List<Path> getPaths(Circuit circuit){
+	public List<Path> getPaths(Grid grid){
 		if(paths == null){
 			paths = new LinkedList<Path>();
 			for (PathSurrogate pathSur : pathsSur) {
-				paths.add(pathSur.getPath(circuit));
+				paths.add(pathSur.getPath(grid));
 			}
 		}
 		return paths;

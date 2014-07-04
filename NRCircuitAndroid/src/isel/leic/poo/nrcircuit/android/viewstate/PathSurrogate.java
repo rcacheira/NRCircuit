@@ -1,15 +1,15 @@
 package isel.leic.poo.nrcircuit.android.viewstate;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import isel.leic.poo.nrcircuit.model.Circuit;
+import isel.leic.poo.nrcircuit.model.Grid;
 import isel.leic.poo.nrcircuit.model.Path;
 import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.Position;
 import isel.leic.poo.nrcircuit.model.terminals.Terminal;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
- * Class whose instance is used to serialize Circuit on Android 
+ * Class whose instance is used to serialize Path on Android 
  */
 public class PathSurrogate implements Parcelable{
 	
@@ -59,14 +59,14 @@ public class PathSurrogate implements Parcelable{
 		positions = null;
 	}
 	
-	public Path getPath(Circuit circuit){
+	public Path getPath(Grid grid){
 		if(path == null){
 			int i = 0;
-			if(!(circuit.getPlaceAtPosition(positions[i]) instanceof Terminal))
+			if(!(grid.getPlaceAtPosition(positions[i]) instanceof Terminal))
 				throw new IllegalStateException("first path position should be a terminal");
-			path = new Path((Terminal)circuit.getPlaceAtPosition(positions[i]));
+			path = new Path((Terminal)grid.getPlaceAtPosition(positions[i]));
 			for(i = 1; i<size; i++)
-				path.add(circuit.getPlaceAtPosition(positions[i]));
+				path.add(grid.getPlaceAtPosition(positions[i]));
 		}
 		return path;
 	}
