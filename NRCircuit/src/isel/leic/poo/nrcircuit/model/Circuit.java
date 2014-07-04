@@ -58,4 +58,12 @@ public class Circuit {
 	public void setCircuitActionListener(OnCircuitActionListener circuitActionListener) {
 		this.circuitActionListener = circuitActionListener;
 	}
+	
+	public int getLevel(){
+		return grid.getLevel();
+	}
+	
+	public Grid getGrid(){
+		return grid;
+	}
 }

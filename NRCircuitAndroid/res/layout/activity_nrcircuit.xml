@@ -12,4 +12,11 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <isel.leic.poo.nrcircuit.android.views.MessageView
+        android:id="@+id/messageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/circuitView"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

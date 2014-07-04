@@ -5,7 +5,6 @@ import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Class whose instance represents a circuit path
@@ -78,6 +77,10 @@ public class Path implements Iterable<Place>{
 	
 	public Place getLastPlace(){
 		return places.getLast();
+	}
+	
+	public int getSize(){
+		return places.size();
 	}
 	
 	@Override

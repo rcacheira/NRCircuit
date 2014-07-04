@@ -19,6 +19,7 @@ public class CircuitView extends View {
 	
 	public static interface OnTileActionListener {
 		public void onTileAction(TileActionEvent evt);
+		public void setLinks();
 	}
 	
 	private OnTileActionListener tileActionListener;
@@ -159,6 +160,8 @@ public class CircuitView extends View {
 						getTileBounds(row, column));
 			}
 		}
+		
+		fireSetLinksEvent();
 	}
 
 	public void setTileActionListener(OnTileActionListener tileActionListener){
@@ -171,14 +174,22 @@ public class CircuitView extends View {
 			tileActionListener.onTileAction(evt);
 	}
 	
+	private void fireSetLinksEvent()
+	{
+		if(tileActionListener != null)
+			tileActionListener.setLinks();
+	}
+	
 	public void setTileProvider(TileFactory tileFactory)
 	{
 		if(tileFactory == null)
 			throw new IllegalArgumentException();
 		
 		this.tileFactory = tileFactory;
-		initTiles();
-		invalidate();
+		if(tileWidth != 0 && tileHeight != 0){
+			initTiles();
+			invalidate();
+		}
 	}
 	
 	@Override

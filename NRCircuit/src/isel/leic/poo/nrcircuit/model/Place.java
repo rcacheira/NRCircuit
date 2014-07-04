@@ -9,7 +9,6 @@ package isel.leic.poo.nrcircuit.model;
  *
  */
 public abstract class Place {
-
 	
 	/**
 	 * The instance's position

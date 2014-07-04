@@ -8,7 +8,7 @@ import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * @author rcacheira & nreis
  *
  */
-public class Grid {
+public class Grid implements Iterable<Path>{
 	public static interface OnPlacesRemovedFromPathListener{
 		public void onPlacesRemovedFromPath(Iterable<Place> placesRemoved);
 	}
@@ -55,6 +55,8 @@ public class Grid {
 	 */
 	private Path workingPath;
 	
+	private boolean someWork;
+	
 	private OnPlacesRemovedFromPathListener placesRemovedFromPathListener;
 	
 	public void setPlacesRemovedFromPathListener(
@@ -78,6 +80,7 @@ public class Grid {
 		paths = new LinkedList<Path>();
 		
 		workingPath = null;
+		someWork = false;
 	}
 	
 	/**
@@ -125,6 +128,7 @@ public class Grid {
 		if(path != null  && (place instanceof Connector)){
 			clearPaths(place);
 			workingPath = path;
+			someWork = true;
 			return true;
 		}
 		if(place instanceof Terminal){
@@ -134,6 +138,7 @@ public class Grid {
 			}
 			workingPath = new Path((Terminal)place);
 			paths.add(workingPath);
+			someWork = true;
 			return true;
 		}
 		return false;
@@ -148,6 +153,11 @@ public class Grid {
 					&& ((Terminal) place).getLetter() != workingPath.getLetter())
 			return false;
 		
+		if(workingPath.hasPlace(place)){
+			//TODO: backwards link
+			return false;
+		}
+		
 		if(place instanceof Terminal){
 			Path path = getPlacePath(place);
 			if(path != null){
@@ -161,7 +171,7 @@ public class Grid {
 		if(!lastPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(lastPlace)){
 			return false;
 		}
-
+		
 		clearPaths(place);
 		workingPath.add(place);
 		
@@ -192,6 +202,17 @@ public class Grid {
 
 	public Path getWorkingPath() {
 		return workingPath;
+	}
+
+	@Override
+	public Iterator<Path> iterator() {
+		return paths.iterator();
+	}
+	
+	public void setPaths(List<Path> paths) {
+		if(this.paths.size() != 0 || someWork == true)
+			throw new IllegalStateException();
+		this.paths = paths;
 	}
 	
 	public boolean isComplete(){

@@ -1,6 +1,7 @@
 package isel.leic.poo.nrcircuit.android;
 
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
+import isel.leic.poo.nrcircuit.android.views.MessageView;
 import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
 import isel.leic.poo.nrcircuit.android.NRCircuitController;
 import isel.leic.poo.nrcircuit.android.NRCircuitController.OnLevelFinishedListener;
@@ -16,10 +17,11 @@ public class NRCircuitActivity extends Activity {
 
 	private NRCircuitController nrCircuitController;
 	private CircuitView circuitView;
+	private MessageView messageView;
 	
-	int level = 1;
+	int level;
 
-	private void createController(CircuitView circuitView, int level, Bundle savedInstanceState){
+	private void createController(Bundle savedInstanceState){
 		
 		int fileId = getResources().getIdentifier("raw/level"+level, null, this.getPackageName());
 		
@@ -36,15 +38,15 @@ public class NRCircuitActivity extends Activity {
 		
 		try {
 			nrCircuitController = (savedInstanceState != null) ?
-					NRCircuitController.createController(circuitView, reader, savedInstanceState) :
-					NRCircuitController.createController(circuitView, reader);
+					NRCircuitController.createController(circuitView, messageView, reader, savedInstanceState) :
+					NRCircuitController.createController(circuitView, messageView, reader);
 					
 			nrCircuitController.setOnLevelFinishedListener(new OnLevelFinishedListener(){
 				@Override
 				public void levelFinished() {
 					System.out.println("Level " + NRCircuitActivity.this.level + " Finished !!");
 					NRCircuitActivity.this.level+=1;
-					createController(NRCircuitActivity.this.circuitView, NRCircuitActivity.this.level, null);
+					createController(null);
 				}
 			});
 		} catch (IOException e) {
@@ -61,10 +63,19 @@ public class NRCircuitActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nrcircuit);
 		
+		level = 1;
+		
 		circuitView = (CircuitView) findViewById(R.id.circuitView);
+		messageView = (MessageView) findViewById(R.id.messageView);
 		
-		createController(circuitView, level, savedInstanceState);
+		createController(savedInstanceState);
 		
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		nrCircuitController.saveState(outState);
 	}
 
 }
