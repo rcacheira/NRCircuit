@@ -24,14 +24,39 @@ public class NRCircuitController {
 	
 	private static final String VIEW_STATE_KEY = "isel.leic.poo.nrcircuit.android.viewstate.Paths";
 	
+	/**
+	 * 
+	 * @author rcacheira & nreis
+	 *
+	 */
 	public interface OnLevelFinishedListener{
 		public void levelFinished();
 	}
 	
+	/**
+	 * Holds the current circuit view.
+	 */
 	private final CircuitView circuitView;
+	
+	/**
+	 * Holds the current circuit model.
+	 */
 	private final Circuit model;
+	
+	/**
+	 * Listener to event OnLevelFinishedListener.
+	 */
 	private OnLevelFinishedListener levelFinishedListener;
 	
+	/**
+	 * The controller instance.
+	 * 
+	 * @param circuitView	The Circuit View
+	 * @param messageView	The Message View
+	 * @param gridFile		The file of the level
+	 * @throws IOException
+	 * @throws FileBadFormatException
+	 */
 	private NRCircuitController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile) throws IOException, FileBadFormatException {
 		if(circuitView == null || messageView == null || gridFile == null)
 			throw new IllegalArgumentException("Any argument can be null");
@@ -134,14 +159,42 @@ public class NRCircuitController {
 		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
 	}
 	
+	/**
+	 * Sets levelFinishedListener.
+	 * 
+	 * @param levelFinishedListener The custom listener to set.
+	 */
 	public void setOnLevelFinishedListener(OnLevelFinishedListener levelFinishedListener){
 		this.levelFinishedListener = levelFinishedListener;
 	}
 	
+	/**
+	 * Factory method that creates a controller instance with the given view, a newly 
+	 * instantiated model and the file to the given level.
+	 * 
+	 * @param circuitView	The Circuit view instance
+	 * @param messageView	The Message View instance
+	 * @param gridFile		The file of the level
+	 * @return				The controller instance
+	 * @throws IOException	
+	 * @throws FileBadFormatException	
+	 */
 	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile) throws IOException, FileBadFormatException{
 		return new NRCircuitController(circuitView, messageView, gridFile);
 	}
 	
+	/**
+	 * Factory method that creates a controller instance with the given view and the model
+	 * retrieved from the received {@link Bundle} instance.
+	 * 
+	 * @param circuitView			The Circuit view instance
+	 * @param messageView			The Message View instance
+	 * @param gridFile				The file of the level
+	 * @param savedInstanceState	The model state
+	 * @return						The controller instance
+	 * @throws IOException
+	 * @throws FileBadFormatException
+	 */
 	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
 		NRCircuitController controller = new NRCircuitController(circuitView, messageView, gridFile);
 		

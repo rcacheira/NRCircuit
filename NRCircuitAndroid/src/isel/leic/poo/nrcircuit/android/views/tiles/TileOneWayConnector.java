@@ -7,10 +7,25 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.RectF;
 
+/**
+ * Class whose instance visually represent a one way connector.
+ * @author rcacheira & nreis
+ *
+ */
 public class TileOneWayConnector extends Tile {
-
+	
+	/**
+	 * Tile's orientation value.
+	 */
 	private Orientation orientation;
 	
+	/**
+	 * Creates an instance with the given arguments.
+	 *  
+	 * @param parent The tile's parent control
+	 * @param bounds The tile's initial bounds
+	 * @param orientation The tile's orientation value
+	 */
 	public TileOneWayConnector(CircuitView parent, RectF bounds, Orientation orientation) {
 		super(parent, bounds);
 		this.orientation = orientation;

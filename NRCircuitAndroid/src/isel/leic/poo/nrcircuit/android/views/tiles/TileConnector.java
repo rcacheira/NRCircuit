@@ -6,8 +6,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.RectF;
 
+/**
+ * Class whose instance visually represent a connector.
+ * @author rcacheira & nreis
+ *
+ */
 public class TileConnector extends Tile {
 	
+	/**
+	 * Creates an instance with the given arguments.
+	 *  
+	 * @param parent The tile's parent control
+	 * @param bounds The tile's initial bounds
+	 */
 	public TileConnector(CircuitView parent, RectF bounds) {
 		super(parent, bounds);
 

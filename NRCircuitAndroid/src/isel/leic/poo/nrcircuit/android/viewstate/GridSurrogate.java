@@ -33,6 +33,12 @@ public class GridSurrogate implements Parcelable {
 	
 	private final PathSurrogate[] pathsSur;
 	
+	/**
+	 * Initiates an instance with the information extracted from the given {@link Parcel}
+	 * instance.
+	 * 
+	 * @param source the parcel containing the grid information 
+	 */
 	private GridSurrogate(Parcel source) {
 		pathsSur = PathSurrogate.CREATOR.newArray(source.readInt());
 		for (int i = 0; i < pathsSur.length; i++) {
@@ -41,6 +47,11 @@ public class GridSurrogate implements Parcelable {
 		paths = null;
 	}
 	
+	/**
+	 * Initiates an instance with the given arguments. 
+	 * 
+	 * @param grid the associated {@link Grid} instance
+	 */
 	public GridSurrogate(Grid grid){
 		paths = new LinkedList<Path>();
 		for (Path path : grid) {

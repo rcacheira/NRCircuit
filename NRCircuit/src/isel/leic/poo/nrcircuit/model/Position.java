@@ -10,7 +10,7 @@ package isel.leic.poo.nrcircuit.model;
 public class Position {
 	
 	/**
-	 * number of positions to mantain in memory
+	 * number of positions to maintain in memory
 	 * 
 	 * the positions to save in memory will be (positionsToSave x positionsToSave)
 	 */
@@ -22,11 +22,11 @@ public class Position {
 	private static Position[][] positions = new Position[positionsToSave][positionsToSave];
 	
 	/**
-	 * sets new number of positions to mantain in memory
+	 * sets new number of positions to maintain in memory
 	 * 
 	 * the positions to save in memory will be (nr x nr)
 	 * 
-	 * @param nr os positions
+	 * @param Number of positions
 	 */
 	public static void setNrOfCoordinatesToSave(int nr){
 		positionsToSave = nr;

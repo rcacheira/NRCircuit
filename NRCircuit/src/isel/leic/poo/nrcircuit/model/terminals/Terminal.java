@@ -21,7 +21,7 @@ public abstract class Terminal extends Place {
 	}
 	
 	/**
-	 * gets a terminal letter
+	 * Gets a terminal letter
 	 * 
 	 * @return
 	 */

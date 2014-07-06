@@ -22,12 +22,30 @@ public class NRCircuitActivity extends Activity {
 	private final static String LEVEL_KEY = "isel.leic.poo.nrcircuit.android.Activity.level";
 	private final static String LEVEL_PROGRESS_FILE_NAME = "d001";
 	
+	/**
+	 * The associated controller instance
+	 */
 	private NRCircuitController nrCircuitController;
+	
+	/**
+	 * The application view instance
+	 */
 	private CircuitView circuitView;
+	
+	/**
+	 * The application view instance
+	 */
 	private MessageView messageView;
 	
+	/**
+	 * The current game level
+	 */
 	int level;
 
+	/**
+	 * 
+	 * @param savedInstanceState
+	 */
 	private void createController(Bundle savedInstanceState){
 		
 		int fileId = getResources().getIdentifier("raw/level"+level, null, this.getPackageName());
@@ -69,12 +87,24 @@ public class NRCircuitActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Saves the level in which the user is currently.
+	 * 
+	 * @param level	Level to be saved.
+	 * @throws IOException
+	 */
 	private void saveLevelProgress(int level) throws IOException{
 		DataOutputStream dos = new DataOutputStream(openFileOutput(LEVEL_PROGRESS_FILE_NAME, 0));
 		dos.writeInt(level);
 		dos.close();
 	}
 	
+	/**
+	 * Loads the level which the user saved, or stopped.
+	 * If there is no level saved it loads level 1.
+	 * 
+	 * @return	The level saved. If none, loads level 1.
+	 */
 	private int loadLevelProgress(){
 		int level = 1;
 		try {

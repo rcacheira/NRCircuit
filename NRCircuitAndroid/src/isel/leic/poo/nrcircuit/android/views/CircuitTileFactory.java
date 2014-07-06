@@ -15,10 +15,21 @@ import isel.leic.poo.nrcircuit.model.connectors.Connector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
 
+/**
+ * Class that implements the factory of tiles for a tile. 
+ */
 public class CircuitTileFactory implements TileFactory {
 
+	/**
+	 * The model instance.
+	 */
 	Circuit model;
 	
+	/**
+	 * Sets the puzzle instance to be used when instantiating tiles
+	 * 
+	 * @param model
+	 */
 	public CircuitTileFactory(Circuit model) {
 		this.model = model;
 	}

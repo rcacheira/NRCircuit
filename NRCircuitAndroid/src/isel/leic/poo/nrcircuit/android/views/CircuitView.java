@@ -17,24 +17,58 @@ import android.view.View;
 
 public class CircuitView extends View {
 	
+	/**
+	 * Contract to be supported by listeners of tile actions (e.g. touch, drag)
+	 */
 	public static interface OnTileActionListener {
+		
 		public void onTileAction(TileActionEvent evt);
+		
 		public void loadAllLinks();
+		
 		public void setGridSize();
 	}
 	
+	/**
+	 * Holds the reference to the registered tile action listener.
+	 */
 	private OnTileActionListener tileActionListener;
 	
+	/**
+	 * Number of Tiles in one line.
+	 */
 	private int columns;
+	
+	/**
+	 * Number of Tiles in one column.
+	 */
 	private int rows;
 	
+	/**
+	 * Holds the view's Tiles.
+	 */
 	private Tile[][] tiles;
+	
 	private TileFactory tileFactory;
 	
+	/**
+	 * Brush to paint the background of the interface.
+	 */
 	private Paint backgroundBrush;
-
+	
+	/**
+	 * The Height of every Tile.
+	 */
 	private int tileHeight;
+	
+	/**
+	 * The Width of every Tile.
+	 */
 	private int tileWidth;
+	
+	/**
+	 * 
+	 */
 	private int squareSize;
 	
 	public CircuitView(Context context) {
@@ -79,23 +113,51 @@ public class CircuitView extends View {
 		tileFactory = null;
 	}
 	
+	/**
+	 * Gets the row on where the tile is.
+	 * 
+	 * @param y
+	 * @return	the row of the tile.
+	 */
 	private int getRow(float y){
 		return (int)(y/tileHeight);
 	}
 	
+	/**
+	 * Gets the column on where the tile is.
+	 * @param x
+	 * @return	the column of the tile.
+	 */
 	private int getColumn(float x){
 		return (int)(x/tileWidth);
 	}
 	
+	/**
+	 * Sets the size of the grid.
+	 * 
+	 * @param rows	Number of rows of the grid.
+	 * @param columns	Number of columns of the grid.
+	 */
 	public void setGridSize(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
 	}
 	
+	/**
+	 * Checks if the touch is within bounds.
+	 * @param x	coordinate x
+	 * @param y	coordinate y
+	 * @return	{@code true} if the coordinates are within their bounds, {@code false} otherwise.
+	 */
 	private boolean isCoordsWithinBounds(float x, float y){
 		return x>=0 && x<=columns*tileWidth && y>=0 && y<=rows*tileHeight;
 	}
 	
+	/**
+	 * Helper method that initializes all brushes used to paint the circuit view.
+	 * 
+	 * @param context	The context in use
+	 */
 	private void initBrushes(Context context, AttributeSet attrs) 
 	{
 		backgroundBrush = new Paint();
@@ -106,18 +168,38 @@ public class CircuitView extends View {
 		setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 	}
 	
+	/**
+	 * 
+	 * @param row
+	 * @param column
+	 * @return The Tile's rect touched.
+	 */
 	private Rect getTileRect(int row, int column){
 		float left = column * tileWidth;
 		float top = row * tileHeight;
 		return new Rect((int)left, (int)top, (int)left+tileWidth, (int)top+tileHeight);
 	}
 	
+	/**
+	 * 
+	 * @param row
+	 * @param column
+	 * @return
+	 */
 	private RectF getTileBounds(int row, int column){
 		float left = column * tileWidth;
 		float top = row * tileHeight;
 		return new RectF((int)left, (int)top, (int)left+tileWidth, (int)top+tileHeight);
 	}
 	
+	/**
+	 * 
+	 * @param row
+	 * @param column
+	 * @param lastRow
+	 * @param lastColumn
+	 * @param letter
+	 */
 	public void setSingleLink(int row, int column, int lastRow, int lastColumn, char letter){
 		int cDelta = lastColumn - column;
 		int rDelta = lastRow - row;
@@ -141,11 +223,20 @@ public class CircuitView extends View {
 		}
 	}
 	
+	/**
+	 * Sets the maximum number of Tiles.
+	 * 
+	 * @param horizontalTileCount
+	 * @param verticalTileCount
+	 */
 	public void setTileCount(int horizontalTileCount, int verticalTileCount){
 		this.columns = horizontalTileCount;
 		this.rows = verticalTileCount;
 	}
 	
+	/**
+	 * Helper method that initializes the view's tiles
+	 */
 	private void initTiles() 
 	{
 		if(tileFactory == null || tileActionListener == null)
@@ -170,10 +261,20 @@ public class CircuitView extends View {
 		fireSetLinksEvent();
 	}
 
+	/**
+	 * Registers the given listener has a receiver of tile action events.
+	 * 
+	 * @param listener the listener to be registered, or {@code null}, to disable notifications.
+	 */
 	public void setTileActionListener(OnTileActionListener tileActionListener){
 		this.tileActionListener = tileActionListener;
 	}
 	
+	/**
+	 * Dispatches the given event to the registered listener, if there is one.
+	 *  
+	 * @param evt the event instance to be dispatched
+	 */
 	private void fireOnTileTouchEvent(TileActionEvent evt)
 	{
 		if(tileActionListener != null)
@@ -186,6 +287,12 @@ public class CircuitView extends View {
 			tileActionListener.loadAllLinks();
 	}
 	
+	/**
+	 * Sets the instance's concrete {@link Tile} instances factory. 
+	 *  
+	 * @param tileFactory The factory instance
+	 * @throws IllegalArgumentException if the argument is {@code null}
+	 */
 	public void setTileProvider(TileFactory tileFactory)
 	{
 		if(tileFactory == null)

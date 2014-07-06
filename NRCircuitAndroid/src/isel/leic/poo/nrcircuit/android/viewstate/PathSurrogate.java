@@ -27,6 +27,7 @@ public class PathSurrogate implements Parcelable{
 		
 	};
 	
+	
 	private Path path;
 	
 	private final int size;

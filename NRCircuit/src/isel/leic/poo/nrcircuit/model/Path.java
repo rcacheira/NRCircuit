@@ -24,7 +24,7 @@ public class Path implements Iterable<Place>{
 	/**
 	 * Creates a new instance with the given parameters
 	 * 
-	 * @param initialT Path's initiak terminal
+	 * @param initialT Path's initial terminal
 	 */
 	public Path(Terminal initialT) {
 		if(initialT == null)
@@ -35,7 +35,7 @@ public class Path implements Iterable<Place>{
 	}
 	
 	/**
-	 * adds a place to path
+	 * Adds a place to path
 	 * 
 	 * @param place place to add
 	 */
