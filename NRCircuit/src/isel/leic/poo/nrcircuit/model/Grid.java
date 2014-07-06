@@ -68,15 +68,15 @@ public class Grid implements Iterable<Path>{
 	 * Creates a new instance of grid with the given parameters
 	 * 
 	 * @param level Grid Level
-	 * @param width horizontal number of places 
-	 * @param height vertical number of places
+	 * @param columns horizontal number of places 
+	 * @param rows vertical number of places
 	 */
-	private Grid(int level, int width, int height) {
+	private Grid(int level, int rows, int columns) {
 		this.level = level;
-		this.columns = width;
-		this.rows = height;
+		this.columns = columns;
+		this.rows = rows;
 		
-		grid = new Place[height][width];
+		grid = new Place[rows][columns];
 		paths = new LinkedList<Path>();
 		
 		workingPath = null;
@@ -114,7 +114,7 @@ public class Grid implements Iterable<Path>{
 	private void clearPaths(Place place){
 		for (Path path : paths) {
 			if(path.hasPlace(place)){
-				fireOnPlacesRemovedFromPathEvent(path.clear(place));
+				fireOnPlacesRemovedFromPathEvent(path.breakPath(place));
 				return;
 			}
 		}
@@ -253,11 +253,11 @@ public class Grid implements Iterable<Path>{
 		fin = line.indexOf('x', init);
 		if(fin == -1)  throw new FileBadFormatException("x of size not found on line 1");
 		
-		int width = Integer.parseInt(line.substring(init+1, fin));
+		int rows = Integer.parseInt(line.substring(init+1, fin));
 		
-		int height = Integer.parseInt(line.substring(fin+1));
+		int columns = Integer.parseInt(line.substring(fin+1));
 		
-		return new Grid(level, width, height);
+		return new Grid(level, rows, columns);
 	}
 	
 	private static Place createPlace(int row, int column, String prmtr) throws FileBadFormatException{

@@ -135,12 +135,12 @@ public abstract class Tile {
 				stopY = bounds.top + bounds.height()/2 + strokeWidth/2;
 				break;
 			case LEFT:
-				startY = stopY = bounds.top + bounds.width()/2;
+				startY = stopY = bounds.top + bounds.height()/2;
 				startX = bounds.left;
 				stopX = bounds.left + bounds.width()/2 + strokeWidth/2;
 				break;
 			case RIGHT:
-				startY = stopY = bounds.top + bounds.width()/2;
+				startY = stopY = bounds.top + bounds.height()/2;
 				startX = bounds.left + bounds.width()/2 - strokeWidth/2;
 				stopX = bounds.right;
 				break;

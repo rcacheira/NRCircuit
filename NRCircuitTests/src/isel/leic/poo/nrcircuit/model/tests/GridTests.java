@@ -115,6 +115,7 @@ public class GridTests {
 		
 
 		assertTrue(grid.setWorkingPath(Position.get(0, 4)));
+		assertTrue(grid.doLink(Position.get(0, 4)));
 		assertTrue(grid.doLink(Position.get(1, 4)));
 		assertTrue(grid.doLink(Position.get(2, 4)));
 		assertTrue(grid.doLink(Position.get(3, 4)));

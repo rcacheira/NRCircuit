@@ -33,8 +33,9 @@ public class NRCircuitActivity extends Activity {
 		int fileId = getResources().getIdentifier("raw/level"+level, null, this.getPackageName());
 		
 		if(fileId == 0){
-			level-=1;
 			System.out.println("You have finished all levels!");
+			level = 1;
+			createController(savedInstanceState);
 			return;
 		}
 		

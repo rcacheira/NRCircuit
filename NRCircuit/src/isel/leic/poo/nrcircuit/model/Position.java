@@ -9,10 +9,25 @@ package isel.leic.poo.nrcircuit.model;
  */
 public class Position {
 	
+	/**
+	 * number of positions to mantain in memory
+	 * 
+	 * the positions to save in memory will be (positionsToSave x positionsToSave)
+	 */
 	private static int positionsToSave = 5;
 	
+	/**
+	 * array of positions saved in memory
+	 */
 	private static Position[][] positions = new Position[positionsToSave][positionsToSave];
 	
+	/**
+	 * sets new number of positions to mantain in memory
+	 * 
+	 * the positions to save in memory will be (nr x nr)
+	 * 
+	 * @param nr os positions
+	 */
 	public static void setNrOfCoordinatesToSave(int nr){
 		positionsToSave = nr;
 		positions = new Position[positionsToSave][positionsToSave];
@@ -37,6 +52,13 @@ public class Position {
 		this.row = row;
 	}
 	
+	/**
+	 * get's a position with given parameters
+	 * 
+	 * @param row position's row
+	 * @param column position's column
+	 * @return position matching the given parameters
+	 */
 	public static Position get(int row, int column){
 		if(column >= 0 && column < positionsToSave && row >= 0 && row < positionsToSave){
 			if(positions[row][column] == null){
@@ -47,6 +69,7 @@ public class Position {
 		else return new Position(row, column);
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this)
 			return true;

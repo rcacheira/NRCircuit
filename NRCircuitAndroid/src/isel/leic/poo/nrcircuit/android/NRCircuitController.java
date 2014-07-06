@@ -114,6 +114,11 @@ public class NRCircuitController {
 				}
 			}
 			
+			@Override
+			public void setGridSize() {
+				NRCircuitController.this.circuitView.setGridSize(model.getRows(), model.getColumns());
+			}
+			
 			
 		});
 		this.circuitView.setTileProvider(new CircuitTileFactory(model));

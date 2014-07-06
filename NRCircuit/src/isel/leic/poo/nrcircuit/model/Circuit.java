@@ -62,6 +62,14 @@ public class Circuit {
 	public int getLevel(){
 		return grid.getLevel();
 	}
+
+	public int getRows() {
+		return grid.getRows();
+	}
+
+	public int getColumns() {
+		return grid.getColumns();
+	}
 	
 	public Grid getGrid(){
 		return grid;

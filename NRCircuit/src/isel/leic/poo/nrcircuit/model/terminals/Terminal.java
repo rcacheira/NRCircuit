@@ -20,6 +20,11 @@ public abstract class Terminal extends Place {
 		super(position);
 	}
 	
+	/**
+	 * gets a terminal letter
+	 * 
+	 * @return
+	 */
 	public abstract char getLetter();
 	
 }

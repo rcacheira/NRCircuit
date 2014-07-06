@@ -15,7 +15,7 @@ public class Tunnel extends Terminal {
 	char letter;
 	
 	/**
-	 * tunnel's brother
+	 * tunnel's twin
 	 */
 	private Tunnel twin;
 	
@@ -60,6 +60,11 @@ public class Tunnel extends Terminal {
 		return false;
 	}
 	
+	/**
+	 * sets Tunnel letter
+	 * 
+	 * @param letter
+	 */
 	public void setLetter(char letter) {
 		this.letter = letter;
 	}

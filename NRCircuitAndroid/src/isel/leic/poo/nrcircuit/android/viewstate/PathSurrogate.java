@@ -81,7 +81,7 @@ public class PathSurrogate implements Parcelable{
 		if(path != null){
 			//AS letter is ASCII char there is no problem with this conversion
 			dest.writeByte((byte)path.getLetter());
-			dest.writeInt(path.getSize());
+			dest.writeInt(path.size());
 			for (Place place : path) {
 				writePosition(place.position, dest);
 			}

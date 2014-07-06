@@ -20,26 +20,22 @@ public class CircuitView extends View {
 	public static interface OnTileActionListener {
 		public void onTileAction(TileActionEvent evt);
 		public void loadAllLinks();
+		public void setGridSize();
 	}
 	
 	private OnTileActionListener tileActionListener;
 	
-	private static final int DEFAULT_TILE_COUNT = 5;
-	
-	private static final String NAMESPACE = "http://schemas.android.com/apk/res-auto";
-	private static final String INITIAL_HORIZONTAL_TILE_COUNT_ATTR = "initialHorizontalTileCount";
-	private static final String INITIAL_VERTICAL_TILE_COUNT_ATTR = "initialVerticalTileCount";
-	
-	private int horizontalTileCount;
-	private int verticalTileCount;
+	private int columns;
+	private int rows;
 	
 	private Tile[][] tiles;
 	private TileFactory tileFactory;
 	
 	private Paint backgroundBrush;
-	
-	private int tileWidth;
+
 	private int tileHeight;
+	private int tileWidth;
+	private int squareSize;
 	
 	public CircuitView(Context context) {
 		this(context, null, 0);
@@ -78,21 +74,26 @@ public class CircuitView extends View {
 			}
 		});
 		
-		horizontalTileCount = attrs.getAttributeIntValue(NAMESPACE, INITIAL_HORIZONTAL_TILE_COUNT_ATTR, DEFAULT_TILE_COUNT);
-		verticalTileCount = attrs.getAttributeIntValue(NAMESPACE, INITIAL_VERTICAL_TILE_COUNT_ATTR, DEFAULT_TILE_COUNT);
+		rows = 5;
+		columns = 5;
 		tileFactory = null;
-	}
-	
-	private int getColumn(float x){
-		return (int)(x/tileWidth);
 	}
 	
 	private int getRow(float y){
 		return (int)(y/tileHeight);
 	}
 	
+	private int getColumn(float x){
+		return (int)(x/tileWidth);
+	}
+	
+	public void setGridSize(int rows, int columns) {
+		this.rows = rows;
+		this.columns = columns;
+	}
+	
 	private boolean isCoordsWithinBounds(float x, float y){
-		return x>=0 && x<=horizontalTileCount*tileWidth && y>=0 && y<=verticalTileCount*tileHeight;
+		return x>=0 && x<=columns*tileWidth && y>=0 && y<=rows*tileHeight;
 	}
 	
 	private void initBrushes(Context context, AttributeSet attrs) 
@@ -141,20 +142,25 @@ public class CircuitView extends View {
 	}
 	
 	public void setTileCount(int horizontalTileCount, int verticalTileCount){
-		this.horizontalTileCount = horizontalTileCount;
-		this.verticalTileCount = verticalTileCount;
+		this.columns = horizontalTileCount;
+		this.rows = verticalTileCount;
 	}
 	
 	private void initTiles() 
 	{
-		if(tileFactory == null)
+		if(tileFactory == null || tileActionListener == null)
 			return;
 		
-		tiles = new Tile[horizontalTileCount][verticalTileCount];
+		tileActionListener.setGridSize();
 		
-		for(int row = 0; row < verticalTileCount; ++row)
+		tileHeight = squareSize / rows;
+		tileWidth = squareSize / columns;
+		
+		tiles = new Tile[rows][columns];
+		
+		for(int row = 0; row < rows; ++row)
 		{
-			for(int column = 0; column < horizontalTileCount; ++column)
+			for(int column = 0; column < columns; ++column)
 			{
 				tiles[row][column] = tileFactory.createTile(row, column, this, 
 						getTileBounds(row, column));
@@ -195,13 +201,10 @@ public class CircuitView extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) 
 	{
-		int squareSize = Math.min(MeasureSpec.getSize(widthMeasureSpec), 
+		squareSize = Math.min(MeasureSpec.getSize(widthMeasureSpec), 
 				MeasureSpec.getSize(heightMeasureSpec));
 		
-		tileWidth = squareSize / horizontalTileCount;
-		tileHeight = squareSize / verticalTileCount;
-		
-		setMeasuredDimension(tileWidth * horizontalTileCount, tileHeight * verticalTileCount);
+		setMeasuredDimension(squareSize, squareSize);
 	}
 	
 	@Override
