@@ -2,6 +2,7 @@ package isel.leic.poo.nrcircuit.model.terminals;
 
 import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.Position;
+import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 
 /**
  * class whose instance represents a fork.
@@ -40,6 +41,14 @@ public class Fork extends Terminal {
 		VERTICAL_LEFT,
 		HORIZONTAL_UP,
 		HORIZONTAL_DOWN
+	}
+	
+	/**
+	 * Gets the Fork's direction
+	 * @return
+	 */
+	public Orientation getOrientation() {
+		return orientation;
 	}
 
 	/**

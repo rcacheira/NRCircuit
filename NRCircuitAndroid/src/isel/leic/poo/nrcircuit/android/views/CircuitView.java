@@ -5,6 +5,7 @@ import isel.leic.poo.nrcircuit.android.common.Tile.Link;
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent;
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent.TileEvent;
 import isel.leic.poo.nrcircuit.android.common.TileFactory;
+import isel.leic.poo.nrcircuit.android.views.tiles.TileTunnel;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -331,6 +332,16 @@ public class CircuitView extends View {
 			for(Tile[] row : tiles){
 				for(Tile tile : row){
 					tile.doDraw(canvas);
+				}
+			}
+		}
+	}
+
+	public void setTunnelsLetter(char letter) {
+		for (Tile[] row : tiles) {
+			for (Tile tile : row) {
+				if(tile instanceof TileTunnel){
+					((TileTunnel)tile).setTunnelLetter(letter);
 				}
 			}
 		}

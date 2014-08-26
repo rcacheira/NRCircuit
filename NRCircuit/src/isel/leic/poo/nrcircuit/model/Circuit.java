@@ -9,7 +9,9 @@ import java.io.IOException;
 public class Circuit {
 
 	public static interface OnCircuitActionListener{
+		public void onLink(int startRow, int startColumn, int topRow, int stopColumn, char letter);
 		public void onLinkClear(int row, int column);
+		public void setTunnelsLetter(char letter);
 	}
 	
 	private OnCircuitActionListener circuitActionListener;

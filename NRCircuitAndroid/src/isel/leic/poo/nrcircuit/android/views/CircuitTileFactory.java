@@ -5,8 +5,10 @@ import isel.leic.poo.nrcircuit.android.common.Tile;
 import isel.leic.poo.nrcircuit.android.common.TileFactory;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileConnector;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileFinalTerminal;
+import isel.leic.poo.nrcircuit.android.views.tiles.TileFork;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileOneWayConnector;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileProhibitedPlace;
+import isel.leic.poo.nrcircuit.android.views.tiles.TileTunnel;
 import isel.leic.poo.nrcircuit.model.Circuit;
 import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.Position;
@@ -14,6 +16,8 @@ import isel.leic.poo.nrcircuit.model.ProhibitedPlace;
 import isel.leic.poo.nrcircuit.model.connectors.Connector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
+import isel.leic.poo.nrcircuit.model.terminals.Fork;
+import isel.leic.poo.nrcircuit.model.terminals.Tunnel;
 
 /**
  * Class that implements the factory of tiles for a tile. 
@@ -52,8 +56,13 @@ public class CircuitTileFactory implements TileFactory {
 		if(place instanceof Connector){
 			return new TileConnector(parent, tileBounds);
 		}
-		
-		throw new IllegalStateException();
+		if(place instanceof Fork){
+			return new TileFork(parent, tileBounds, ((Fork)place).getOrientation());
+		}
+		if(place instanceof Tunnel){
+			return new TileTunnel(parent, tileBounds);
+		}
+		throw new IllegalStateException("no tile defined for place type");
 	}
 
 }

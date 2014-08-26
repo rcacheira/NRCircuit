@@ -14,6 +14,8 @@ import android.graphics.RectF;
  */
 public abstract class Tile {
 	
+	protected static final char NO_LETTER = 0; 
+	
 	/**
 	 * Maximum number of links per {@code Tile}
 	 */
@@ -43,6 +45,8 @@ public abstract class Tile {
 	 * @return	The color
 	 */
 	public static int getLetterColor(char letter){
+		if( letter == NO_LETTER)
+			return Color.GRAY;
 		int factor = (letter-'A');
 		int idxColor = 255/NR_OF_COLORS * factor;
 		return Color.rgb(
@@ -117,6 +121,7 @@ public abstract class Tile {
 		
 		links = new Link[MAX_LINKS];
 		nLinks = 0;
+		letter = NO_LETTER;
 		
 		backgroundBounds = bounds;
 		backgroundBounds.inset(1, 1);
@@ -143,6 +148,16 @@ public abstract class Tile {
 	}
 	
 	/**
+	 * get's tile letter
+	 * 
+	 * @return letter char if tile has letter, {@link NO_LETTER} otherwise
+	 */
+	public char getLetter() {
+		return letter;
+	}
+	
+	/**
+	 * Verifies if tile has links
 	 * 
 	 * @return	{@code true} if Tiles has links, {@code false} otherwise.
 	 */
@@ -176,6 +191,7 @@ public abstract class Tile {
 		if(!hasLinks()){
 			return false;
 		}
+		letter = NO_LETTER;
 		nLinks = 0;
 		return true;
 	}
@@ -251,5 +267,14 @@ public abstract class Tile {
 		}
 		
 		canvas.drawLine(startX, startY, stopX, stopY, linkedBrush);
+	}
+	
+	/**
+	 * Sets letter of Tile
+	 * 
+	 * @param letter
+	 */
+	protected void setLetter(char letter){
+		this.letter = letter;
 	}
 }

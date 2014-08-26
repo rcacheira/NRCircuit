@@ -4,7 +4,9 @@ import isel.leic.poo.nrcircuit.model.connectors.Connector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
+import isel.leic.poo.nrcircuit.model.terminals.Fork;
 import isel.leic.poo.nrcircuit.model.terminals.Terminal;
+import isel.leic.poo.nrcircuit.model.terminals.Tunnel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -272,6 +274,21 @@ public class Grid implements Iterable<Path>{
 		}
 		if(prmtr.equals("*")){
 			return new ProhibitedPlace(Position.get(row, column));
+		}
+		if(prmtr.equalsIgnoreCase("$1")){
+			return new Fork(Position.get(row, column), isel.leic.poo.nrcircuit.model.terminals.Fork.Orientation.HORIZONTAL_UP);
+		}
+		if(prmtr.equalsIgnoreCase("$2")){
+			return new Fork(Position.get(row, column), isel.leic.poo.nrcircuit.model.terminals.Fork.Orientation.VERTICAL_RIGHT);
+		}
+		if(prmtr.equalsIgnoreCase("$3")){
+			return new Fork(Position.get(row, column), isel.leic.poo.nrcircuit.model.terminals.Fork.Orientation.HORIZONTAL_DOWN);
+		}
+		if(prmtr.equalsIgnoreCase("$4")){
+			return new Fork(Position.get(row, column), isel.leic.poo.nrcircuit.model.terminals.Fork.Orientation.VERTICAL_LEFT);
+		}
+		if(prmtr.equalsIgnoreCase("$t")){
+			return new Tunnel(Position.get(row, column));
 		}
 		if(prmtr.length() == 1 && (prmtr.charAt(0) >= 'A' && prmtr.charAt(0) <= 'Z'
 				|| prmtr.charAt(0) >= 'a' && prmtr.charAt(0) <= 'z')){

@@ -64,8 +64,17 @@ public class NRCircuitController {
 		model = new Circuit(gridFile);
 		model.setCircuitActionListener(new OnCircuitActionListener(){
 			@Override
+			public void onLink(int startRow, int startColumn, int stopRow, int stopColumn, char letter) {
+				NRCircuitController.this.circuitView.setLink(startRow, startColumn, stopRow, stopColumn, letter);
+			}
+			
+			@Override
 			public void onLinkClear(int row, int column) {
 				NRCircuitController.this.circuitView.clearLink(row, column);
+			}
+			@Override
+			public void setTunnelsLetter(char letter) {
+				NRCircuitController.this.circuitView.setTunnelsLetter(letter);
 			}
 		});
 		
