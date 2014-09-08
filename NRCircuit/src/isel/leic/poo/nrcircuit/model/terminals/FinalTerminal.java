@@ -33,5 +33,10 @@ public class FinalTerminal extends Terminal {
 	public void setLetter(char letter) {
 		throw new IllegalStateException("Letter of finalTerminal can't be changed");
 	}
+	
+	@Override
+	public boolean isFullLinked() {
+		return isEndOrBeginOfPath();
+	}
 
 }

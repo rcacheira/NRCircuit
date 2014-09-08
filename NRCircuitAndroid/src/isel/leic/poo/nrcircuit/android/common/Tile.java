@@ -174,7 +174,7 @@ public abstract class Tile {
 	 * @param link
 	 * @return
 	 */
-	private int findLinkPosition(LinkDirection link){
+	protected int findLinkPosition(LinkDirection link){
 		for(int i=0; i<MAX_LINKS; i++){
 			if(links[i] == link)
 				return i;

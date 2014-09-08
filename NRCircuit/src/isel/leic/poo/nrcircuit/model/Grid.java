@@ -119,8 +119,9 @@ public class Grid{
 		if(place instanceof ProhibitedPlace)
 			return false;
 		if(place instanceof FinalTerminal || place.getLetter() != Place.NO_LETTER){
-			if(!(place instanceof Fork) || place.isFullLinked())
-				clearLinks(place);
+			if(!(place instanceof Fork) || place.isFullLinked()){
+				clearFollowedLinks(place);
+			}
 			workingPlace = place;
 			return true;
 		}
@@ -130,44 +131,65 @@ public class Grid{
 	public boolean doLink(Position position){
 		Place place = getPlaceAtPosition(position);
 		
-		if(place instanceof ProhibitedPlace || workingPlace == null 
-				|| place instanceof Terminal && place.getLetter() != Place.NO_LETTER
-				&& place.getLetter() != workingPlace.getLetter())
+		if(place instanceof ProhibitedPlace || workingPlace == null || place instanceof Terminal 
+				&& place.getLetter() != Place.NO_LETTER && place.getLetter() != workingPlace.getLetter())
 			return false;
 		
-		//this check is to permit going back
+		//verify if the link is going backwards
 		if(place.isLinkedWith(workingPlace))
-			clearLinks(place);
-		else{
-			if(!workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace)){
-				return false;
-			}
-			
-			clearLinks(place);
+			return doLinkGoingBackwards(place);
 		
-			workingPlace.addLink(place);
-			if(place instanceof Terminal)
-				((Terminal)place).setEndOfPath(true);
-			
-			if(!(place instanceof FinalTerminal)){
-				//to set all tunnels letter
-				if(place instanceof Tunnel && place.getLetter() == Place.NO_LETTER)
-					setTunnelsLetter(workingPlace.getLetter());
-				else
-					place.setLetter(workingPlace.getLetter());
-			}
-			fireOnLinkDoneEvent(new Link(workingPlace, place));
-		}
+		return doLinkGoingForward(place);
+	}
+	
+	private boolean doLinkGoingBackwards(Place place){
+		clearFollowedLinks(place);
 		workingPlace = place;
-		
 		return true;
 	}
 	
-	private void clearLinks(Place place){
+	private boolean doLinkGoingForward(Place place){
+		if(!workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace) 
+				|| workingPlace.isFullLinked()){
+			return false;
+		}
+		
+		clearLinks(place);
+	
+		workingPlace.addLink(place);
+		if(place instanceof Terminal) 
+			((Terminal)place).setEndOfPath(true);
+		
+		if(!(place instanceof FinalTerminal)){
+			if(place instanceof Tunnel){
+				if(place.getLetter() == Place.NO_LETTER)
+					//this verification is to set all tunnels letter
+					setTunnelsLetter(workingPlace.getLetter());
+			}
+			else
+				place.setLetter(workingPlace.getLetter());
+		}
+		fireOnLinkDoneEvent(new Link(workingPlace, place));
+		workingPlace = place;
+		return true;
+	}
+	
+	private void clearFollowedLinks(Place place){
 		List<Link> linksCleared = new LinkedList<Link>();
-		place.clearNextLinks(linksCleared);
+		place.clearFollowedLinks(linksCleared);
 		fireOnLinkClearEvent(linksCleared);
 		checkTunnelsLinks();
+	}
+	
+	private void clearLinks(Place place){
+		if(place.position.row > 0 && grid[place.position.row-1][place.position.column].isLinkedWith(place))
+			clearFollowedLinks(grid[place.position.row-1][place.position.column]);
+		else if(place.position.row < rows-1 && grid[place.position.row+1][place.position.column].isLinkedWith(place))
+			clearFollowedLinks(grid[place.position.row+1][place.position.column]);
+		else if(place.position.column > 0 && grid[place.position.row][place.position.column-1].isLinkedWith(place))
+			clearFollowedLinks(grid[place.position.row][place.position.column-1]);
+		else if(place.position.column < columns-1 && grid[place.position.row][place.position.column+1].isLinkedWith(place))
+			clearFollowedLinks(grid[place.position.row][place.position.column+1]);
 	}
 	
 	private void checkTunnelsLinks(){

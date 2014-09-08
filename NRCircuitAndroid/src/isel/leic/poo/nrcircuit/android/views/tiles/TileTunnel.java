@@ -1,6 +1,7 @@
 package isel.leic.poo.nrcircuit.android.views.tiles;
 
 import isel.leic.poo.nrcircuit.android.common.Tile;
+import isel.leic.poo.nrcircuit.android.common.Tile.LinkDirection;
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -45,6 +46,16 @@ public class TileTunnel extends Tile {
 	 */
 	public void setTunnelLetter(char letter){
 		setLetter(letter);
+	}
+	
+	@Override
+	public boolean clearLink(LinkDirection link){
+		if(!hasLinks()){
+			return false;
+		}
+		links[findLinkPosition(link)] = null;
+		nLinks--;
+		return true;
 	}
 	
 }

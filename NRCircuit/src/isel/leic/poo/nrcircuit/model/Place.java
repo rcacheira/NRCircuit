@@ -74,7 +74,7 @@ public abstract class Place {
 		linksUsed = 0;
 	}
 	
-	public void clearNextLinks(List<Grid.Link> placesCleared){
+	public void clearFollowedLinks(List<Grid.Link> placesCleared){
 		if(placesCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
 		clearLinksArr(placesCleared);
