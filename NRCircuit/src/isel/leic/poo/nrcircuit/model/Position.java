@@ -78,4 +78,9 @@ public class Position {
 		Position c = (Position)obj;
 		return column == c.column && row == c.row;
 	}
+	
+	@Override
+	public String toString() {
+		return "Position: {row:" + row + " column:" + column +"}";
+	}
 }

@@ -24,9 +24,7 @@ public class CircuitView extends View {
 	public static interface OnTileActionListener {
 		
 		public void onTileAction(TileActionEvent evt);
-		
-		public void loadAllLinks();
-		
+		public void getLinkEvents();
 		public void setGridSize();
 	}
 	
@@ -313,7 +311,7 @@ public class CircuitView extends View {
 	private void fireSetLinksEvent()
 	{
 		if(tileActionListener != null)
-			tileActionListener.loadAllLinks();
+			tileActionListener.getLinkEvents();
 	}
 	
 	/**

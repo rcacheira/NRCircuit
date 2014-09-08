@@ -1,11 +1,11 @@
 package isel.leic.poo.nrcircuit.android;
 
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent;
-import isel.leic.poo.nrcircuit.android.common.TileActionEvent.TileEvent;
 import isel.leic.poo.nrcircuit.android.views.CircuitTileFactory;
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import isel.leic.poo.nrcircuit.android.views.CircuitView.OnTileActionListener;
 import isel.leic.poo.nrcircuit.android.views.MessageView;
+import isel.leic.poo.nrcircuit.android.viewstate.GridSurrogate;
 import isel.leic.poo.nrcircuit.model.Circuit;
 import isel.leic.poo.nrcircuit.model.Circuit.OnCircuitActionListener;
 import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
@@ -117,26 +117,15 @@ public class NRCircuitController {
 						return;
 				}
 			}
-
-			@Override
-			public void loadAllLinks() {
-//				for (Place path : model.getGrid()) {
-//					Iterator<Place> it = path.iterator();
-//					if(it.hasNext()){
-//						Position from = it.next().position;
-//						Position to;
-//						for (;it.hasNext();) {
-//							to = it.next().position;
-//							NRCircuitController.this.circuitView.setLink(from.row, from.column, to.row, to.column, path.getLetter());
-//							from = to;
-//						}
-//					}
-//				}
-			}
 			
 			@Override
 			public void setGridSize() {
 				NRCircuitController.this.circuitView.setGridSize(model.getRows(), model.getColumns());
+			}
+
+			@Override
+			public void getLinkEvents() {
+				model.askForLinkEvents();
 			}
 			
 			
@@ -151,7 +140,7 @@ public class NRCircuitController {
 	 */
 	public void saveState(Bundle stateBundle)
 	{
-//		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
+		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
 	}
 	
 	/**
@@ -193,7 +182,7 @@ public class NRCircuitController {
 	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
 		NRCircuitController controller = new NRCircuitController(circuitView, messageView, gridFile);
 		
-		//controller.model.getGrid().setPaths(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getPaths(controller.model.getGrid()));
+		controller.model.getGrid().setLinks(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getLinks());
 		
 		return controller;
 	}

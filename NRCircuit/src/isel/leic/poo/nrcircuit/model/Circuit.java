@@ -1,7 +1,6 @@
 package isel.leic.poo.nrcircuit.model;
 
 import  isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
-import isel.leic.poo.nrcircuit.model.Grid.Link;
 import isel.leic.poo.nrcircuit.model.Grid.OnGridActionListener;
 
 import java.io.BufferedReader;
@@ -23,10 +22,10 @@ public class Circuit {
 		grid = Grid.loadGrid(bufReader);
 		grid.setLinkListener(new OnGridActionListener() {
 			@Override
-			public void onLinkClear(Iterable<Grid.Link> placesRemoved) {
+			public void onLinkClear(Iterable<Link> placesRemoved) {
 				if(circuitActionListener != null){
-					for (Grid.Link link : placesRemoved) {
-						circuitActionListener.onLinkClear(link.origin.position, link.destiny.position);
+					for (Link link : placesRemoved) {
+						circuitActionListener.onLinkClear(link.origin, link.destiny);
 					}
 				}
 			}
@@ -34,7 +33,7 @@ public class Circuit {
 			@Override
 			public void onLinkDone(Link link, char letter) {
 				if(circuitActionListener != null){
-					circuitActionListener.onLinkDone(link.origin.position, link.destiny.position, letter);
+					circuitActionListener.onLinkDone(link.origin, link.destiny, letter);
 				}
 			}
 
@@ -89,5 +88,9 @@ public class Circuit {
 	
 	public Grid getGrid(){
 		return grid;
+	}
+	
+	public void askForLinkEvents(){
+		grid.fireLinkEvents();
 	}
 }

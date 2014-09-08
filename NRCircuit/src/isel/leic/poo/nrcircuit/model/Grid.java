@@ -7,6 +7,7 @@ import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
 import isel.leic.poo.nrcircuit.model.terminals.Fork;
 import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 import isel.leic.poo.nrcircuit.model.terminals.Tunnel;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -21,16 +22,6 @@ import java.util.List;
  *
  */
 public class Grid{
-	
-	public static class Link{
-		public final Place origin;
-		public final Place destiny;
-		
-		public Link(Place origin, Place destiny) {
-			this.origin = origin;
-			this.destiny = destiny;
-		}
-	}
 	
 	public static interface OnGridActionListener{
 		public void onLinkClear(Iterable<Link> placesRemoved);
@@ -57,6 +48,13 @@ public class Grid{
 	 * Array of places
 	 */
 	private Place grid[][];
+	
+	/**
+	 * Array of links
+	 * 
+	 * Used to save the state
+	 */
+	private List<Link> links;
 	
 	/**
 	 * List of Tunnels
@@ -92,6 +90,7 @@ public class Grid{
 		
 		grid = new Place[rows][columns];
 		tunnels = new LinkedList<Tunnel>();
+		links = new LinkedList<Link>();
 		workingPlace = null;
 	}
 	
@@ -156,27 +155,34 @@ public class Grid{
 		
 		clearLinks(place);
 	
-		workingPlace.addLink(place);
-		if(place instanceof Terminal) 
-			((Terminal)place).setEndOfPath(true);
-		
-		if(!(place instanceof FinalTerminal)){
-			if(place instanceof Tunnel){
-				if(place.getLetter() == Place.NO_LETTER)
-					//this verification is to set all tunnels letter
-					setTunnelsLetter(workingPlace.getLetter());
-			}
-			else
-				place.setLetter(workingPlace.getLetter());
-		}
-		fireOnLinkDoneEvent(new Link(workingPlace, place));
+		doLinkAux(workingPlace, place);
+		Link link = new Link(workingPlace.position, place.position);
+		fireOnLinkDoneEvent(link, workingPlace.getLetter());
+		links.add(link);
 		workingPlace = place;
 		return true;
+	}
+	
+	private void doLinkAux(Place origin, Place destiny){
+		origin.addLink(destiny);
+		if(destiny instanceof Terminal) 
+			((Terminal)destiny).setEndOfPath(true);
+		
+		if(!(destiny instanceof FinalTerminal)){
+			if(destiny instanceof Tunnel){
+				if(destiny.getLetter() == Place.NO_LETTER)
+					//this verification is to set all tunnels letter
+					setTunnelsLetter(origin.getLetter());
+			}
+			else
+				destiny.setLetter(origin.getLetter());
+		}
 	}
 	
 	private void clearFollowedLinks(Place place){
 		List<Link> linksCleared = new LinkedList<Link>();
 		place.clearFollowedLinks(linksCleared);
+		links.removeAll(linksCleared);
 		fireOnLinkClearEvent(linksCleared);
 		checkTunnelsLinks();
 	}
@@ -213,9 +219,11 @@ public class Grid{
 		}
 	}
 	
-	void fireOnLinkDoneEvent(Link link){
+	void fireOnLinkDoneEvent(Link link, char letter){
+		System.out.println("fireOnLinkDoneEvent origin:" + link.origin + " destiny:" + link.destiny);
 		if(gridActionListener != null){
-			gridActionListener.onLinkDone(link, link.origin.getLetter());
+			System.out.println("gridActionListener != null");
+			gridActionListener.onLinkDone(link, letter);
 		}
 	}
 	
@@ -243,6 +251,27 @@ public class Grid{
 
 	public Place getWorkingPlace() {
 		return workingPlace;
+	}
+	
+	public Iterable<Link> getLinks() {
+		return links;
+	}
+	
+	public void fireLinkEvents(){
+		System.out.println("fireLinkEvents called");
+		for (Link link : links) {
+			fireOnLinkDoneEvent(link, getPlaceAtPosition(link.origin).getLetter());
+		}
+	}
+	
+	public void setLinks(Iterable<Link> links){
+		if(!this.links.isEmpty()){
+			throw new IllegalStateException("Can't set links with existing links");
+		}
+		
+		for (Link link : links) {
+			doLinkAux(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny));
+		}
 	}
 	
 	public boolean isComplete(){

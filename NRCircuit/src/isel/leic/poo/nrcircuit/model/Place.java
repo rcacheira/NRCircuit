@@ -61,12 +61,12 @@ public abstract class Place {
 	 * 
 	 * @param placesCleared
 	 */
-	private void clearLinksArr(List<Grid.Link> placesCleared){
+	private void clearLinksArr(List<Link> placesCleared){
 		if(placesCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
 		for (int i=0; i<linksUsed; i++) {
 			if(links[i] != null){
-				placesCleared.add(new Grid.Link(this, links[i]));
+				placesCleared.add(new Link(this.position, links[i].position));
 				links[i].clearLinks(placesCleared);
 				links[i] = null;
 			}
@@ -74,13 +74,13 @@ public abstract class Place {
 		linksUsed = 0;
 	}
 	
-	public void clearFollowedLinks(List<Grid.Link> placesCleared){
+	public void clearFollowedLinks(List<Link> placesCleared){
 		if(placesCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
 		clearLinksArr(placesCleared);
 	}
 	
-	private void clearLinks(List<Grid.Link> placesCleared){
+	private void clearLinks(List<Link> placesCleared){
 		if(placesCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
 		clearLinksArr(placesCleared);
