@@ -26,7 +26,7 @@ public abstract class Tile {
 	 * @author Nuno
 	 *
 	 */
-	public static enum Link{
+	public static enum LinkDirection{
 		TOP,
 		LEFT,
 		RIGHT,
@@ -97,7 +97,7 @@ public abstract class Tile {
 	/**
 	 * The links of a Tile.
 	 */
-	protected Link[] links;
+	protected LinkDirection[] links;
 	
 	/**
 	 * Number of links in a Tile.
@@ -119,7 +119,7 @@ public abstract class Tile {
 		this.parent = parent;
 		this.bounds = bounds;
 		
-		links = new Link[MAX_LINKS];
+		links = new LinkDirection[MAX_LINKS];
 		nLinks = 0;
 		letter = NO_LETTER;
 		
@@ -166,12 +166,39 @@ public abstract class Tile {
 	}
 	
 	/**
+	 * Find a free empty position
+	 * 
+	 * @return
+	 */
+	private int findEmptyLinkPosition(){
+		for(int i=0; i<MAX_LINKS; i++){
+			if(links[i] == null)
+				return i;
+		}
+		throw new IllegalStateException("No free link position");
+	}
+	
+	/**
+	 * Find link position
+	 * 
+	 * @param link
+	 * @return
+	 */
+	private int findLinkPosition(LinkDirection link){
+		for(int i=0; i<MAX_LINKS; i++){
+			if(links[i] == link)
+				return i;
+		}
+		throw new IllegalStateException("No link");
+	}
+	
+	/**
 	 * Set a link in a Tile.
 	 * 
 	 * @param link The new link to set.
 	 * @param letter	The letter of the link (color).
 	 */
-	public void setLink(Link link, char letter){
+	public void setLink(LinkDirection link, char letter){
 		if (nLinks == MAX_LINKS)
 			throw new IllegalStateException("Can't set more than " + MAX_LINKS + " links");
 		if (!hasLinks())
@@ -180,19 +207,22 @@ public abstract class Tile {
 			if(this.letter != letter)
 				throw new IllegalStateException("Link letter different of previous links letter");
 		
-		links[nLinks++] = link;
+		links[findEmptyLinkPosition()] = link;
+		nLinks++;
 	}
 	
 	/**
 	 * Clears all links from a Tile.
 	 * @return	{@code true} if it had links, {@code false} otherwise.
 	 */
-	public boolean clearLinks(){
+	public boolean clearLink(LinkDirection link){
 		if(!hasLinks()){
 			return false;
 		}
-		letter = NO_LETTER;
-		nLinks = 0;
+		links[findLinkPosition(link)] = null;
+		nLinks--;
+		if(!hasLinks())
+			letter = NO_LETTER;
 		return true;
 	}
 	
@@ -238,7 +268,7 @@ public abstract class Tile {
 	 * @param link
 	 * @param canvas
 	 */
-	private void drawLink(Link link, Canvas canvas){
+	private void drawLink(LinkDirection link, Canvas canvas){
 		linkedBrush.setColor(Tile.getLetterColor(letter));
 		
 		float startX = 0, stopX = 0;

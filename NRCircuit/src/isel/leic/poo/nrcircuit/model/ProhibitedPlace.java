@@ -15,7 +15,7 @@ public class ProhibitedPlace extends Place {
 	 * @param position The Prohibited Place position
 	 */
 	public ProhibitedPlace(Position position) {
-		super(position);
+		super(position, 0);
 	}
 
 	@Override

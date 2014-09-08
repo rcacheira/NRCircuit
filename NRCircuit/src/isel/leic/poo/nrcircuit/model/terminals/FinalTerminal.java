@@ -10,29 +10,28 @@ import isel.leic.poo.nrcircuit.model.Position;
  */
 public class FinalTerminal extends Terminal {
 	
-	private char letter;
-	
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
 	 * @param position The FinalTerminal position
 	 */
 	public FinalTerminal(Position position, char letter) {
-		super(position);
-		this.letter = letter;
+		super(position, 1);
+		super.setLetter(letter);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(super.equals(obj) && obj instanceof FinalTerminal)
-			return ((FinalTerminal)obj).letter == letter;
+			return ((FinalTerminal)obj).position == position
+				&& ((FinalTerminal)obj).getLetter() == getLetter();
 		
 		return false;
 	}
 	
 	@Override
-	public char getLetter() {
-		return letter;
+	public void setLetter(char letter) {
+		throw new IllegalStateException("Letter of finalTerminal can't be changed");
 	}
 
 }

@@ -6,7 +6,7 @@ import isel.leic.poo.nrcircuit.model.Place;
 public class MockPlace extends Place {
 
 	public MockPlace(Position coordinate) {
-		super(coordinate);
+		super(coordinate, 0);
 	}
 
 }

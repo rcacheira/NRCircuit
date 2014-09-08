@@ -11,8 +11,6 @@ import isel.leic.poo.nrcircuit.model.Position;
  *
  */
 public class Tunnel extends Terminal {
-
-	char letter;
 	
 	/**
 	 * Initiates an instance with the given parameters
@@ -20,28 +18,14 @@ public class Tunnel extends Terminal {
 	 * @param position the Tunnel position
 	 */
 	public Tunnel(Position position) {
-		super(position);
+		super(position, 1);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(super.equals(obj) && obj instanceof Tunnel)
-			return ((Tunnel)obj).letter == letter;
+			return ((Tunnel)obj).position == position;
 		
 		return false;
-	}
-	
-	/**
-	 * sets Tunnel letter
-	 * 
-	 * @param letter
-	 */
-	public void setLetter(char letter) {
-		this.letter = letter;
-	}
-	
-	@Override
-	public char getLetter() {
-		return letter;
 	}
 }

@@ -4,7 +4,6 @@ public class TileActionEvent {
 
 	public enum TileEvent{
 		TILE_TOUCH,
-		LINKED_TILE_TOUCH,
 		TILE_LINK
 	}
 	

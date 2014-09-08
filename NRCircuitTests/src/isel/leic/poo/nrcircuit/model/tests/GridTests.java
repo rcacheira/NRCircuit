@@ -14,6 +14,8 @@ import isel.leic.poo.nrcircuit.model.connectors.Connector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
+import isel.leic.poo.nrcircuit.model.terminals.Fork;
+import isel.leic.poo.nrcircuit.model.terminals.Tunnel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,9 +30,9 @@ public class GridTests {
 	public GridTests(){
 		goodStr = "#1 5x5";
 		goodStr+="\nA - - - .";
-		goodStr+="\nB - - . |";
-		goodStr+="\nC C * | |";
-		goodStr+="\nB - - . |";
+		goodStr+="\nB - - $t |";
+		goodStr+="\nC C * A $4";
+		goodStr+="\nB - - $t |";
 		goodStr+="\nA - - - .";
 	}
 	
@@ -53,19 +55,19 @@ public class GridTests {
 		assertThat(grid.getPlaceAtPosition(Position.get(1,0)), is(equalTo((Place)new FinalTerminal(Position.get(1, 0), 'B'))));
 		assertThat(grid.getPlaceAtPosition(Position.get(1,1)), is(equalTo((Place)new OneWayConnector(Position.get(1, 1), Orientation.HORIZONTAL))));
 		assertThat(grid.getPlaceAtPosition(Position.get(1,2)), is(equalTo((Place)new OneWayConnector(Position.get(1, 2), Orientation.HORIZONTAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(1,3)), is(equalTo((Place)new Connector(Position.get(1, 3)))));
+		assertThat(grid.getPlaceAtPosition(Position.get(1,3)), is(equalTo((Place)new Tunnel(Position.get(1, 3)))));
 		assertThat(grid.getPlaceAtPosition(Position.get(1,4)), is(equalTo((Place)new OneWayConnector(Position.get(1, 4), Orientation.VERTICAL))));
 		
 		assertThat(grid.getPlaceAtPosition(Position.get(2,0)), is(equalTo((Place)new FinalTerminal(Position.get(2, 0), 'C'))));
 		assertThat(grid.getPlaceAtPosition(Position.get(2,1)), is(equalTo((Place)new FinalTerminal(Position.get(2, 1), 'C'))));
 		assertThat(grid.getPlaceAtPosition(Position.get(2,2)), is(equalTo((Place)new ProhibitedPlace(Position.get(2, 2)))));
-		assertThat(grid.getPlaceAtPosition(Position.get(2,3)), is(equalTo((Place)new OneWayConnector(Position.get(2, 3), Orientation.VERTICAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(2,4)), is(equalTo((Place)new OneWayConnector(Position.get(2, 4), Orientation.VERTICAL))));
+		assertThat(grid.getPlaceAtPosition(Position.get(2,3)), is(equalTo((Place)new FinalTerminal(Position.get(2, 3), 'A'))));
+		assertThat(grid.getPlaceAtPosition(Position.get(2,4)), is(equalTo((Place)new Fork(Position.get(2, 4), isel.leic.poo.nrcircuit.model.terminals.Fork.Orientation.VERTICAL_LEFT))));
 		
 		assertThat(grid.getPlaceAtPosition(Position.get(3,0)), is(equalTo((Place)new FinalTerminal(Position.get(3, 0), 'B'))));
 		assertThat(grid.getPlaceAtPosition(Position.get(3,1)), is(equalTo((Place)new OneWayConnector(Position.get(3, 1), Orientation.HORIZONTAL))));
 		assertThat(grid.getPlaceAtPosition(Position.get(3,2)), is(equalTo((Place)new OneWayConnector(Position.get(3, 2), Orientation.HORIZONTAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(3,3)), is(equalTo((Place)new Connector(Position.get(3, 3)))));
+		assertThat(grid.getPlaceAtPosition(Position.get(3,3)), is(equalTo((Place)new Tunnel(Position.get(3, 3)))));
 		assertThat(grid.getPlaceAtPosition(Position.get(3,4)), is(equalTo((Place)new OneWayConnector(Position.get(3, 4), Orientation.VERTICAL))));
 		
 		assertThat(grid.getPlaceAtPosition(Position.get(4,0)), is(equalTo((Place)new FinalTerminal(Position.get(4, 0), 'A'))));
@@ -80,18 +82,18 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertFalse(grid.setWorkingPath(Position.get(0, 1)));
+		assertFalse(grid.setWorkingPlace(Position.get(0, 1)));
 		assertFalse(grid.doLink(Position.get(0, 1)));
 		
 		assertFalse(grid.isComplete());
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 0)));
 		assertTrue(grid.doLink(Position.get(0, 1)));
 		assertTrue(grid.doLink(Position.get(0, 2)));
 		
 		assertFalse(grid.isComplete());
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 0)));
 		
 		assertFalse(grid.isComplete());
 		
@@ -113,16 +115,12 @@ public class GridTests {
 		assertTrue(grid.doLink(Position.get(4, 1)));
 		assertTrue(grid.doLink(Position.get(4, 0)));
 		
-
-		assertTrue(grid.setWorkingPath(Position.get(0, 4)));
-		assertTrue(grid.doLink(Position.get(0, 4)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 4)));
+		assertFalse(grid.doLink(Position.get(0, 4)));
 		assertTrue(grid.doLink(Position.get(1, 4)));
 		assertTrue(grid.doLink(Position.get(2, 4)));
 		assertTrue(grid.doLink(Position.get(3, 4)));
 		assertTrue(grid.doLink(Position.get(4, 4)));
-		assertFalse(grid.doLink(Position.get(4, 2)));
-		assertFalse(grid.doLink(Position.get(2, 4)));
-		assertFalse(grid.doLink(Position.get(3, 3)));
 		assertTrue(grid.doLink(Position.get(4, 3)));
 		assertTrue(grid.doLink(Position.get(4, 2)));
 		assertTrue(grid.doLink(Position.get(4, 1)));
@@ -130,21 +128,26 @@ public class GridTests {
 		
 		assertFalse(grid.isComplete());
 		
-		assertTrue(grid.setWorkingPath(Position.get(1, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(1, 0)));
 		assertTrue(grid.doLink(Position.get(1, 1)));
 		assertTrue(grid.doLink(Position.get(1, 2)));
 		assertTrue(grid.doLink(Position.get(1, 3)));
-		assertTrue(grid.doLink(Position.get(2, 3)));
-		assertTrue(grid.doLink(Position.get(3, 3)));
+
+		assertTrue(grid.setWorkingPlace(Position.get(3, 3)));
 		assertTrue(grid.doLink(Position.get(3, 2)));
 		assertTrue(grid.doLink(Position.get(3, 1)));
 		assertTrue(grid.doLink(Position.get(3, 0)));
 		
 		assertFalse(grid.isComplete());
 		
-		assertTrue(grid.setWorkingPath(Position.get(2, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(2, 0)));
 		assertTrue(grid.doLink(Position.get(2, 1)));
-	
+		
+		assertFalse(grid.isComplete());
+		
+		assertTrue(grid.setWorkingPlace(Position.get(2, 4)));
+		assertTrue(grid.doLink(Position.get(2, 3)));
+		
 		assertTrue(grid.isComplete());
 	}
 	
@@ -153,7 +156,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 0)));
 		grid.doLink(Position.get(5, 2));
 	}
 	
@@ -162,7 +165,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 0)));
 		grid.doLink(Position.get(2, 5));
 	}
 	
@@ -171,7 +174,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 0)));
 		grid.doLink(Position.get(5, 5));
 	}
 	
@@ -180,7 +183,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(5, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(5, 0)));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -188,7 +191,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, 5)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, 5)));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -196,7 +199,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(5, 5)));
+		assertTrue(grid.setWorkingPlace(Position.get(5, 5)));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -204,7 +207,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(-1, 0)));
+		assertTrue(grid.setWorkingPlace(Position.get(-1, 0)));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -212,7 +215,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(0, -1)));
+		assertTrue(grid.setWorkingPlace(Position.get(0, -1)));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -220,7 +223,7 @@ public class GridTests {
 		
 		Grid grid = Grid.loadGrid(new BufferedReader(new StringReader(goodStr)));
 		
-		assertTrue(grid.setWorkingPath(Position.get(-1, -1)));
+		assertTrue(grid.setWorkingPlace(Position.get(-1, -1)));
 	}
 	
 	@Test (expected = NumberFormatException.class)

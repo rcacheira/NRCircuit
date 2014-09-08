@@ -17,7 +17,7 @@ public class Connector extends Place {
 	 * @param position The Connector position
 	 */
 	public Connector(Position position) {
-		super(position);
+		super(position, 1);
 	}
 
 	@Override

@@ -11,20 +11,29 @@ import isel.leic.poo.nrcircuit.model.Position;
  */
 public abstract class Terminal extends Place {
 	
+	private boolean endOfPath;
+	
 	/**
 	 * Initiates an instance with the given parameters
 	 * 
 	 * @param position The terminal position
 	 */
-	public Terminal(Position position) {
-		super(position);
+	public Terminal(Position position, int nLinks) {
+		super(position, nLinks);
+		endOfPath = false;
 	}
 	
-	/**
-	 * Gets a terminal letter
-	 * 
-	 * @return
-	 */
-	public abstract char getLetter();
+	@Override
+	protected void especificClearWork(){
+		endOfPath = false;
+	}
+	
+	public void setEndOfPath(boolean endOfPath){
+		this.endOfPath = endOfPath;
+	}
+	
+	public boolean isEndOrBeginOfPath() {
+		return endOfPath || links[0] != null;
+	}
 	
 }

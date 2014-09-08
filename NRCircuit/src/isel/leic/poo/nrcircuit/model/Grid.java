@@ -7,10 +7,8 @@ import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
 import isel.leic.poo.nrcircuit.model.terminals.Fork;
 import isel.leic.poo.nrcircuit.model.terminals.Terminal;
 import isel.leic.poo.nrcircuit.model.terminals.Tunnel;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,9 +20,22 @@ import java.util.List;
  * @author rcacheira & nreis
  *
  */
-public class Grid implements Iterable<Path>{
-	public static interface OnPlacesRemovedFromPathListener{
-		public void onPlacesRemovedFromPath(Iterable<Place> placesRemoved);
+public class Grid{
+	
+	public static class Link{
+		public final Place origin;
+		public final Place destiny;
+		
+		public Link(Place origin, Place destiny) {
+			this.origin = origin;
+			this.destiny = destiny;
+		}
+	}
+	
+	public static interface OnGridActionListener{
+		public void onLinkClear(Iterable<Link> placesRemoved);
+		public void onLinkDone(Link link, char letter);
+		public void onSetTunnelsLetter(char letter);
 	}
 	
 	/**
@@ -48,22 +59,23 @@ public class Grid implements Iterable<Path>{
 	private Place grid[][];
 	
 	/**
-	 * List of paths
+	 * List of Tunnels
+	 * 
+	 * List of tunnel places is used in clear links time, because is needed to 
+	 * check if any tunnel remain with link or is end of path, if not is needed 
+	 * to remove the letter of tunnel places
 	 */
-	private List<Path> paths;
+	private List<Tunnel> tunnels;
 	
 	/**
 	 * Path being draw
 	 */
-	private Path workingPath;
+	private Place workingPlace;
 	
-	private boolean someWork;
+	private OnGridActionListener gridActionListener;
 	
-	private OnPlacesRemovedFromPathListener placesRemovedFromPathListener;
-	
-	public void setPlacesRemovedFromPathListener(
-			OnPlacesRemovedFromPathListener placesRemovedFromPathListener) {
-		this.placesRemovedFromPathListener = placesRemovedFromPathListener;
+	public void setLinkListener(OnGridActionListener gridActionListener) {
+		this.gridActionListener = gridActionListener;
 	}
 	
 	/**
@@ -79,10 +91,8 @@ public class Grid implements Iterable<Path>{
 		this.rows = rows;
 		
 		grid = new Place[rows][columns];
-		paths = new LinkedList<Path>();
-		
-		workingPath = null;
-		someWork = false;
+		tunnels = new LinkedList<Tunnel>();
+		workingPlace = null;
 	}
 	
 	/**
@@ -104,43 +114,14 @@ public class Grid implements Iterable<Path>{
 		return grid[position.row][position.column];
 	}
 	
-	private Path getPlacePath(Place place){
-		for (Path path : paths) {
-			if(path.hasPlace(place)){
-				return path;
-			}
-		}
-		return null;
-	}
-	
-	private void clearPaths(Place place){
-		for (Path path : paths) {
-			if(path.hasPlace(place)){
-				fireOnPlacesRemovedFromPathEvent(path.breakPath(place));
-				return;
-			}
-		}
-	}
-	
-	public boolean setWorkingPath(Position position){
+	public boolean setWorkingPlace(Position position){
 		Place place = getPlaceAtPosition(position);
 		if(place instanceof ProhibitedPlace)
 			return false;
-		Path path = getPlacePath(place);
-		if(path != null  && (place instanceof Connector)){
-			clearPaths(place);
-			workingPath = path;
-			someWork = true;
-			return true;
-		}
-		if(place instanceof Terminal){
-			if(path != null){
-				fireOnPlacesRemovedFromPathEvent(path);
-				paths.remove(path);
-			}
-			workingPath = new Path((Terminal)place);
-			paths.add(workingPath);
-			someWork = true;
+		if(place instanceof FinalTerminal || place.getLetter() != Place.NO_LETTER){
+			if(!(place instanceof Fork) || place.isFullLinked())
+				clearLinks(place);
+			workingPlace = place;
 			return true;
 		}
 		return false;
@@ -149,40 +130,76 @@ public class Grid implements Iterable<Path>{
 	public boolean doLink(Position position){
 		Place place = getPlaceAtPosition(position);
 		
-		if(place instanceof ProhibitedPlace || workingPath == null 
-				|| workingPath.isFull()
-				|| place instanceof Terminal 
-					&& ((Terminal) place).getLetter() != workingPath.getLetter())
+		if(place instanceof ProhibitedPlace || workingPlace == null 
+				|| place instanceof Terminal && place.getLetter() != Place.NO_LETTER
+				&& place.getLetter() != workingPlace.getLetter())
 			return false;
 		
-		if(workingPath.hasPlace(place)){
-			//TODO: backwards link
-			return false;
-		}
-		
-		if(place instanceof Terminal){
-			Path path = getPlacePath(place);
-			if(path != null){
-				fireOnPlacesRemovedFromPathEvent(path);
-				paths.remove(path);
+		//this check is to permit going back
+		if(place.isLinkedWith(workingPlace))
+			clearLinks(place);
+		else{
+			if(!workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace)){
+				return false;
 			}
+			
+			clearLinks(place);
+		
+			workingPlace.addLink(place);
+			if(place instanceof Terminal)
+				((Terminal)place).setEndOfPath(true);
+			
+			if(!(place instanceof FinalTerminal)){
+				//to set all tunnels letter
+				if(place instanceof Tunnel && place.getLetter() == Place.NO_LETTER)
+					setTunnelsLetter(workingPlace.getLetter());
+				else
+					place.setLetter(workingPlace.getLetter());
+			}
+			fireOnLinkDoneEvent(new Link(workingPlace, place));
 		}
-		
-		Place lastPlace = workingPath.getLastPlace();
-		
-		if(!lastPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(lastPlace)){
-			return false;
-		}
-		
-		clearPaths(place);
-		workingPath.add(place);
+		workingPlace = place;
 		
 		return true;
 	}
 	
-	void fireOnPlacesRemovedFromPathEvent(Iterable<Place> placesRemoved){
-		if(placesRemovedFromPathListener != null){
-			placesRemovedFromPathListener.onPlacesRemovedFromPath(placesRemoved);
+	private void clearLinks(Place place){
+		List<Link> linksCleared = new LinkedList<Link>();
+		place.clearNextLinks(linksCleared);
+		fireOnLinkClearEvent(linksCleared);
+		checkTunnelsLinks();
+	}
+	
+	private void checkTunnelsLinks(){
+		for (Tunnel tunnel : tunnels) {
+			if(tunnel.isEndOrBeginOfPath())
+				return;
+		}
+		setTunnelsLetter(Place.NO_LETTER);
+	}
+	
+	private void setTunnelsLetter(char letter) {
+		for (Tunnel tunnel : tunnels) {
+			tunnel.setLetter(letter);
+		}
+		fireOnSetTunnelsLetter(letter);
+	}
+
+	void fireOnLinkClearEvent(Iterable<Link> placesRemoved){
+		if(gridActionListener != null){
+			gridActionListener.onLinkClear(placesRemoved);
+		}
+	}
+	
+	void fireOnLinkDoneEvent(Link link){
+		if(gridActionListener != null){
+			gridActionListener.onLinkDone(link, link.origin.getLetter());
+		}
+	}
+	
+	void fireOnSetTunnelsLetter(char letter){
+		if(gridActionListener != null){
+			gridActionListener.onSetTunnelsLetter(letter);
 		}
 	}
 	
@@ -202,43 +219,27 @@ public class Grid implements Iterable<Path>{
 		return columns*rows;
 	}
 
-	public Path getWorkingPath() {
-		return workingPath;
-	}
-
-	@Override
-	public Iterator<Path> iterator() {
-		return paths.iterator();
-	}
-	
-	public void setPaths(List<Path> paths) {
-		if(this.paths.size() != 0 || someWork == true)
-			throw new IllegalStateException();
-		this.paths = paths;
+	public Place getWorkingPlace() {
+		return workingPlace;
 	}
 	
 	public boolean isComplete(){
-		boolean[][] linked = new boolean[rows][columns];
-		
-		for (Path path : paths) {
-			for (Place place : path) {
-				linked[place.position.row][place.position.column] = true;
-			}
-		}
-		
-		for (int row = 0; row < linked.length; row++) {
-			for (int column = 0; column < linked[row].length; column++) {
-				if(!linked[row][column] && !(grid[row][column] instanceof ProhibitedPlace)){
+		for (Place[] places : grid) {
+			for (Place place : places) {
+				if(place instanceof ProhibitedPlace)
+					continue;
+				if(place instanceof Terminal && !((Terminal)place).isEndOrBeginOfPath())
 					return false;
-				}
+				if(!(place instanceof Terminal) && 
+						(place.getLetter() == Place.NO_LETTER || !place.isFullLinked()))
+					return false;
 			}
 		}
-		
 		return true;
 	}
 	
 	/**
-	 * Creates ine grid 
+	 * Creates line grid 
 	 * @param line
 	 * @return
 	 * @throws FileBadFormatException
@@ -304,7 +305,10 @@ public class Grid implements Iterable<Path>{
 		}
 		int prmtrIdx = 0;
 		for (int i = 0; i < prmtrs.length; i++) {
-			grid.grid[row][prmtrIdx] = createPlace(row, prmtrIdx, prmtrs[i]);
+			Place place = createPlace(row, prmtrIdx, prmtrs[i]);
+			grid.grid[row][prmtrIdx] = place;
+			if(place instanceof Tunnel)
+				grid.tunnels.add((Tunnel)place);
 			prmtrIdx++;
 		}
 	}

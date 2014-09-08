@@ -1,7 +1,7 @@
 package isel.leic.poo.nrcircuit.android.views;
 
 import isel.leic.poo.nrcircuit.android.common.Tile;
-import isel.leic.poo.nrcircuit.android.common.Tile.Link;
+import isel.leic.poo.nrcircuit.android.common.Tile.LinkDirection;
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent;
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent.TileEvent;
 import isel.leic.poo.nrcircuit.android.common.TileFactory;
@@ -95,11 +95,7 @@ public class CircuitView extends View {
 				int column = getColumn(event.getX(0));
 				switch(event.getAction()){
 					case MotionEvent.ACTION_DOWN:
-						if(tiles[row][column].hasLinks()){
-							fireOnTileTouchEvent(new TileActionEvent(TileEvent.LINKED_TILE_TOUCH, row, column));
-						}else{
-							fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_TOUCH, row, column));
-						}
+						fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_TOUCH, row, column));
 						return true;
 					case MotionEvent.ACTION_MOVE:
 						fireOnTileTouchEvent(new TileActionEvent(TileEvent.TILE_LINK, row, column));
@@ -194,6 +190,25 @@ public class CircuitView extends View {
 	}
 	
 	/**
+	 * Calculates a link direction
+	 * 
+	 * @param row initial row
+	 * @param column initial column
+	 * @param lastRow final row
+	 * @param lastColumn final column
+	 * @return
+	 */
+	private LinkDirection calcLinkDirection(int row, int column, int lastRow, int lastColumn){
+		int cDelta = lastColumn - column;
+		int rDelta = lastRow - row;
+		
+		if(cDelta == 0 && rDelta == 0)
+			throw new IllegalStateException("No link direction");
+		
+		return cDelta != 0 ? cDelta < 1 ? LinkDirection.LEFT : LinkDirection.RIGHT : rDelta < 1 ? LinkDirection.TOP : LinkDirection.BOTTOM;
+	}
+	
+	/**
 	 * 
 	 * @param row
 	 * @param column
@@ -202,25 +217,38 @@ public class CircuitView extends View {
 	 * @param letter
 	 */
 	public void setSingleLink(int row, int column, int lastRow, int lastColumn, char letter){
-		int cDelta = lastColumn - column;
-		int rDelta = lastRow - row;
-		
-		tiles[row][column].setLink(cDelta != 0 ? 
-				cDelta < 1 ? Link.LEFT : Link.RIGHT : 
-				rDelta < 1 ? Link.TOP : Link.BOTTOM , 
-				letter);
-		
+		tiles[row][column].setLink(calcLinkDirection(row, column, lastRow, lastColumn), letter);
 		invalidate(getTileRect(row, column));
 	}
 	
+	/**
+	 * Sets a link between coordinate's tiles
+	 * 
+	 * @param startRow
+	 * @param startColumn
+	 * @param stopRow
+	 * @param stopColumn
+	 * @param letter
+	 */
 	public void setLink(int startRow, int startColumn, int stopRow, int stopColumn, char letter){
 		setSingleLink(startRow, startColumn, stopRow, stopColumn, letter);
 		setSingleLink(stopRow, stopColumn, startRow, startColumn, letter);
 	}
 	
-	public void clearLink(int row, int column){
-		if(tiles[row][column].clearLinks()){
-			invalidate(getTileRect(row, column));
+	/**
+	 * Clear link between coordinate's tiles
+	 * 
+	 * @param startRow
+	 * @param startColumn
+	 * @param stopRow
+	 * @param stopColumn
+	 */
+	public void clearLink(int startRow, int startColumn, int stopRow, int stopColumn){
+		if(tiles[startRow][startColumn].clearLink(calcLinkDirection(startRow, startColumn, stopRow, stopColumn))){
+			invalidate(getTileRect(startRow, startColumn));
+		}
+		if(tiles[stopRow][stopColumn].clearLink(calcLinkDirection(stopRow, stopColumn, startRow, startColumn))){
+			invalidate(getTileRect(stopRow, stopColumn));
 		}
 	}
 	
@@ -338,10 +366,11 @@ public class CircuitView extends View {
 	}
 
 	public void setTunnelsLetter(char letter) {
-		for (Tile[] row : tiles) {
-			for (Tile tile : row) {
-				if(tile instanceof TileTunnel){
-					((TileTunnel)tile).setTunnelLetter(letter);
+		for (int i = 0; i<rows ; i++) {
+			for (int j = 0; j< columns; j++) {
+				if(tiles[i][j] instanceof TileTunnel){
+					((TileTunnel)tiles[i][j]).setTunnelLetter(letter);
+					invalidate(getTileRect( i, j));
 				}
 			}
 		}

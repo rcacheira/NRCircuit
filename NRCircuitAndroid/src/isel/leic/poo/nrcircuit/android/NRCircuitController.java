@@ -1,23 +1,19 @@
 package isel.leic.poo.nrcircuit.android;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent;
 import isel.leic.poo.nrcircuit.android.common.TileActionEvent.TileEvent;
 import isel.leic.poo.nrcircuit.android.views.CircuitTileFactory;
 import isel.leic.poo.nrcircuit.android.views.CircuitView;
 import isel.leic.poo.nrcircuit.android.views.CircuitView.OnTileActionListener;
 import isel.leic.poo.nrcircuit.android.views.MessageView;
-import isel.leic.poo.nrcircuit.android.viewstate.GridSurrogate;
 import isel.leic.poo.nrcircuit.model.Circuit;
 import isel.leic.poo.nrcircuit.model.Circuit.OnCircuitActionListener;
 import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
-import isel.leic.poo.nrcircuit.model.Path;
-import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.Position;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+
 import android.os.Bundle;
 
 public class NRCircuitController {
@@ -64,16 +60,16 @@ public class NRCircuitController {
 		model = new Circuit(gridFile);
 		model.setCircuitActionListener(new OnCircuitActionListener(){
 			@Override
-			public void onLink(int startRow, int startColumn, int stopRow, int stopColumn, char letter) {
-				NRCircuitController.this.circuitView.setLink(startRow, startColumn, stopRow, stopColumn, letter);
+			public void onLinkDone(Position origin, Position destiny, char letter) {
+				NRCircuitController.this.circuitView.setLink(origin.row, origin.column, destiny.row, destiny.column, letter);
 			}
 			
 			@Override
-			public void onLinkClear(int row, int column) {
-				NRCircuitController.this.circuitView.clearLink(row, column);
+			public void onLinkClear(Position origin, Position destiny) {
+				NRCircuitController.this.circuitView.clearLink(origin.row, origin.column, destiny.row, destiny.column);
 			}
 			@Override
-			public void setTunnelsLetter(char letter) {
+			public void onSetTunnelsLetter(char letter) {
 				NRCircuitController.this.circuitView.setTunnelsLetter(letter);
 			}
 		});
@@ -87,7 +83,7 @@ public class NRCircuitController {
 			private int lastColumn = 0;
 			
 			private boolean setWorkingPath(TileActionEvent evt){
-				if(model.setWorkingPath(Position.get(evt.row, evt.column))){
+				if(model.setWorkingPlace(Position.get(evt.row, evt.column))){
 					lastRow = model.getLastPlacePosition().row;
 					lastColumn = model.getLastPlacePosition().column;
 					return true;
@@ -96,13 +92,8 @@ public class NRCircuitController {
 			}
 			
 			private boolean doLink(TileActionEvent evt){
-				if((evt.row != lastRow || evt.column != lastColumn) && model.doLink(Position.get(evt.row, evt.column))){
-					if(evt.event == TileEvent.TILE_LINK){
-						NRCircuitController.this.circuitView.setLink(lastRow, lastColumn, evt.row, evt.column, model.getCurrentLetter());
-					}
-					else{
-						NRCircuitController.this.circuitView.setSingleLink(evt.row, evt.column, lastRow, lastColumn, model.getCurrentLetter());
-					}
+				if((evt.row != lastRow || evt.column != lastColumn) 
+						&& model.doLink(Position.get(evt.row, evt.column))){
 					lastRow = evt.row;
 					lastColumn = evt.column;
 					if(model.isCircuitFinished()){
@@ -121,11 +112,6 @@ public class NRCircuitController {
 					case TILE_TOUCH:
 						setWorkingPath(evt);
 						return;
-					case LINKED_TILE_TOUCH:
-						if(setWorkingPath(evt)){
-							doLink(evt);
-						}
-						return;
 					case TILE_LINK:
 						doLink(evt);
 						return;
@@ -134,18 +120,18 @@ public class NRCircuitController {
 
 			@Override
 			public void loadAllLinks() {
-				for (Path path : model.getGrid()) {
-					Iterator<Place> it = path.iterator();
-					if(it.hasNext()){
-						Position from = it.next().position;
-						Position to;
-						for (;it.hasNext();) {
-							to = it.next().position;
-							NRCircuitController.this.circuitView.setLink(from.row, from.column, to.row, to.column, path.getLetter());
-							from = to;
-						}
-					}
-				}
+//				for (Place path : model.getGrid()) {
+//					Iterator<Place> it = path.iterator();
+//					if(it.hasNext()){
+//						Position from = it.next().position;
+//						Position to;
+//						for (;it.hasNext();) {
+//							to = it.next().position;
+//							NRCircuitController.this.circuitView.setLink(from.row, from.column, to.row, to.column, path.getLetter());
+//							from = to;
+//						}
+//					}
+//				}
 			}
 			
 			@Override
@@ -165,7 +151,7 @@ public class NRCircuitController {
 	 */
 	public void saveState(Bundle stateBundle)
 	{
-		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
+//		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
 	}
 	
 	/**
@@ -207,7 +193,7 @@ public class NRCircuitController {
 	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
 		NRCircuitController controller = new NRCircuitController(circuitView, messageView, gridFile);
 		
-		controller.model.getGrid().setPaths(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getPaths(controller.model.getGrid()));
+		//controller.model.getGrid().setPaths(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getPaths(controller.model.getGrid()));
 		
 		return controller;
 	}

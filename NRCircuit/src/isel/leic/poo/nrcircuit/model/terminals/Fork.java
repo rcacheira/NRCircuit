@@ -2,7 +2,6 @@ package isel.leic.poo.nrcircuit.model.terminals;
 
 import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.Position;
-import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 
 /**
  * class whose instance represents a fork.
@@ -11,8 +10,6 @@ import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
  *
  */
 public class Fork extends Terminal {
-	
-	private char letter;
 	
 	/**
 	 * The instance's orientation
@@ -26,7 +23,7 @@ public class Fork extends Terminal {
 	 * @param orientation The Fork orientation
 	 */
 	public Fork(Position position, Orientation orientation) {
-		super(position);
+		super(position, 2);
 		this.orientation = orientation;
 	}
 
@@ -93,17 +90,9 @@ public class Fork extends Terminal {
 		return false;
 	}
 	
-	/**
-	 * sets fork letter
-	 * 
-	 * @param letter
-	 */
-	public void setLetter(char letter) {
-		this.letter = letter;
-	}
-	
 	@Override
-	public char getLetter() {
-		return letter;
+	protected void especificClearWork(){
+		super.especificClearWork();
+		setLetter(NO_LETTER);
 	}
 }

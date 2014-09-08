@@ -1,7 +1,8 @@
 package isel.leic.poo.nrcircuit.model;
 
-import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
-import isel.leic.poo.nrcircuit.model.Grid.OnPlacesRemovedFromPathListener;
+import  isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
+import isel.leic.poo.nrcircuit.model.Grid.Link;
+import isel.leic.poo.nrcircuit.model.Grid.OnGridActionListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,9 +10,9 @@ import java.io.IOException;
 public class Circuit {
 
 	public static interface OnCircuitActionListener{
-		public void onLink(int startRow, int startColumn, int topRow, int stopColumn, char letter);
-		public void onLinkClear(int row, int column);
-		public void setTunnelsLetter(char letter);
+		public void onLinkDone(Position origin, Position destiny, char letter);
+		public void onLinkClear(Position origin, Position destiny);
+		public void onSetTunnelsLetter(char letter);
 	}
 	
 	private OnCircuitActionListener circuitActionListener;
@@ -20,21 +21,34 @@ public class Circuit {
 	
 	public Circuit(BufferedReader bufReader) throws IOException, FileBadFormatException {
 		grid = Grid.loadGrid(bufReader);
-		grid.setPlacesRemovedFromPathListener(new OnPlacesRemovedFromPathListener() {
+		grid.setLinkListener(new OnGridActionListener() {
 			@Override
-			public void onPlacesRemovedFromPath(Iterable<Place> placesRemoved) {
+			public void onLinkClear(Iterable<Grid.Link> placesRemoved) {
 				if(circuitActionListener != null){
-					for (Place place : placesRemoved) {
-						if(place != null)
-							circuitActionListener.onLinkClear(place.position.row, place.position.column);
+					for (Grid.Link link : placesRemoved) {
+						circuitActionListener.onLinkClear(link.origin.position, link.destiny.position);
 					}
+				}
+			}
+
+			@Override
+			public void onLinkDone(Link link, char letter) {
+				if(circuitActionListener != null){
+					circuitActionListener.onLinkDone(link.origin.position, link.destiny.position, letter);
+				}
+			}
+
+			@Override
+			public void onSetTunnelsLetter(char letter) {
+				if(circuitActionListener != null){
+					circuitActionListener.onSetTunnelsLetter(letter);
 				}
 			}
 		});
 	}
 
-	public boolean setWorkingPath(Position position){
-		return grid.setWorkingPath(position);
+	public boolean setWorkingPlace(Position position){
+		return grid.setWorkingPlace(position);
 	}
 	
 	public boolean doLink(Position position){
@@ -46,11 +60,11 @@ public class Circuit {
 	}
 	
 	public Position getLastPlacePosition(){
-		return grid.getWorkingPath().getLastPlace().position;
+		return grid.getWorkingPlace().position;
 	}
 	
 	public char getCurrentLetter(){
-		return grid.getWorkingPath().getLetter();
+		return grid.getWorkingPlace().getLetter();
 	}
 	
 	public Place getPlaceAtPosition(Position position){
