@@ -74,10 +74,6 @@ public abstract class Tile {
 	/**
 	 * Brush to paint the user interface.
 	 */
-	protected final Paint boundsBrush;
-	/**
-	 * Brush to paint the user interface.
-	 */
 	protected final Paint backgroundBrush;
 	/**
 	 * Brush to paint the user interface.
@@ -124,12 +120,6 @@ public abstract class Tile {
 		letter = NO_LETTER;
 		
 		backgroundBounds = bounds;
-		backgroundBounds.inset(1, 1);
-		
-		boundsBrush = new Paint();
-		boundsBrush.setStyle(Paint.Style.STROKE);
-		boundsBrush.setColor(Color.DKGRAY);
-		boundsBrush.setStrokeWidth(1);
 		
 		backgroundBrush = new Paint();
 		backgroundBrush.setStyle(Paint.Style.FILL);
@@ -232,7 +222,6 @@ public abstract class Tile {
 	 * @param canvas canvas to draw in.
 	 */
 	public final void doDraw(Canvas canvas){
-		canvas.drawRect(bounds, boundsBrush);
 		canvas.drawRect(backgroundBounds, backgroundBrush);
 		if(nLinks > 0){
 			linkedBrush.setColor(Tile.getLetterColor(letter));
