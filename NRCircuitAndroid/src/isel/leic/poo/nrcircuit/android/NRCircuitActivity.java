@@ -117,6 +117,7 @@ public class NRCircuitActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		System.out.println("onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nrcircuit);
 		
@@ -127,13 +128,15 @@ public class NRCircuitActivity extends Activity {
 		messageView = (MessageView) findViewById(R.id.messageView);
 		
 		createController(savedInstanceState);
-		
+		System.out.println("onCreate2");
 	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		System.out.println("onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		nrCircuitController.saveState(outState);
+		System.out.println("onSaveInstanceState2");
 	}
 
 }

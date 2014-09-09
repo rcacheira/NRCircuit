@@ -155,7 +155,7 @@ public class Grid{
 		
 		clearLinks(place);
 	
-		doLinkAux(workingPlace, place);
+		doLinkAux(workingPlace, place, true);
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
 		links.add(link);
@@ -163,16 +163,18 @@ public class Grid{
 		return true;
 	}
 	
-	private void doLinkAux(Place origin, Place destiny){
+	private void doLinkAux(Place origin, Place destiny, boolean sendEvents){
 		origin.addLink(destiny);
 		if(destiny instanceof Terminal) 
 			((Terminal)destiny).setEndOfPath(true);
 		
 		if(!(destiny instanceof FinalTerminal)){
 			if(destiny instanceof Tunnel){
-				if(destiny.getLetter() == Place.NO_LETTER)
+				if(destiny.getLetter() == Place.NO_LETTER){
 					//this verification is to set all tunnels letter
 					setTunnelsLetter(origin.getLetter());
+					if(sendEvents) fireOnSetTunnelsLetter(origin.getLetter());
+				}
 			}
 			else
 				destiny.setLetter(origin.getLetter());
@@ -210,7 +212,6 @@ public class Grid{
 		for (Tunnel tunnel : tunnels) {
 			tunnel.setLetter(letter);
 		}
-		fireOnSetTunnelsLetter(letter);
 	}
 
 	void fireOnLinkClearEvent(Iterable<Link> placesRemoved){
@@ -256,6 +257,9 @@ public class Grid{
 	}
 	
 	public void fireLinkEvents(){
+		if(!tunnels.isEmpty()){
+			fireOnSetTunnelsLetter(tunnels.get(0).getLetter());
+		}
 		for (Link link : links) {
 			fireOnLinkDoneEvent(link, getPlaceAtPosition(link.origin).getLetter());
 		}
@@ -267,7 +271,8 @@ public class Grid{
 		}
 		
 		for (Link link : links) {
-			doLinkAux(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny));
+			doLinkAux(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
+			this.links.add(link);
 		}
 	}
 	
