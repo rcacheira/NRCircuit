@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import android.os.Bundle;
 
-public class NRCircuitController {
+public class NRCircuitGameController {
 	
 	private static final String VIEW_STATE_KEY = "isel.leic.poo.nrcircuit.links";
 	
@@ -53,7 +53,7 @@ public class NRCircuitController {
 	 * @throws IOException
 	 * @throws FileBadFormatException
 	 */
-	private NRCircuitController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile) throws IOException, FileBadFormatException {
+	private NRCircuitGameController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile) throws IOException, FileBadFormatException {
 		if(circuitView == null || messageView == null || gridFile == null)
 			throw new IllegalArgumentException("Any argument can be null");
 		
@@ -61,16 +61,16 @@ public class NRCircuitController {
 		model.setCircuitActionListener(new OnCircuitActionListener(){
 			@Override
 			public void onLinkDone(Position origin, Position destiny, char letter) {
-				NRCircuitController.this.circuitView.setLink(origin.row, origin.column, destiny.row, destiny.column, letter);
+				NRCircuitGameController.this.circuitView.setLink(origin.row, origin.column, destiny.row, destiny.column, letter);
 			}
 			
 			@Override
 			public void onLinkClear(Position origin, Position destiny) {
-				NRCircuitController.this.circuitView.clearLink(origin.row, origin.column, destiny.row, destiny.column);
+				NRCircuitGameController.this.circuitView.clearLink(origin.row, origin.column, destiny.row, destiny.column);
 			}
 			@Override
 			public void onSetTunnelsLetter(char letter) {
-				NRCircuitController.this.circuitView.setTunnelsLetter(letter);
+				NRCircuitGameController.this.circuitView.setTunnelsLetter(letter);
 			}
 		});
 		
@@ -120,7 +120,7 @@ public class NRCircuitController {
 			
 			@Override
 			public void setGridSize() {
-				NRCircuitController.this.circuitView.setGridSize(model.getRows(), model.getColumns());
+				NRCircuitGameController.this.circuitView.setGridSize(model.getRows(), model.getColumns());
 			}
 
 			@Override
@@ -163,8 +163,8 @@ public class NRCircuitController {
 	 * @throws IOException	
 	 * @throws FileBadFormatException	
 	 */
-	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile) throws IOException, FileBadFormatException{
-		return new NRCircuitController(circuitView, messageView, gridFile);
+	public static NRCircuitGameController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile) throws IOException, FileBadFormatException{
+		return new NRCircuitGameController(circuitView, messageView, gridFile);
 	}
 	
 	/**
@@ -179,8 +179,8 @@ public class NRCircuitController {
 	 * @throws IOException
 	 * @throws FileBadFormatException
 	 */
-	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
-		NRCircuitController controller = new NRCircuitController(circuitView, messageView, gridFile);
+	public static NRCircuitGameController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
+		NRCircuitGameController controller = new NRCircuitGameController(circuitView, messageView, gridFile);
 		
 		controller.model.getGrid().setLinks(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getLinks());
 		

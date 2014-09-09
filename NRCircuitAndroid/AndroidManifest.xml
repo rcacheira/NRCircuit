@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="16"
         android:targetSdkVersion="19" />
 
     <application
@@ -14,20 +14,18 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="isel.leic.poo.nrcircuit.android.NRCircuitActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name="isel.leic.poo.nrcircuit.android.NRCircuitModuleActivity"
-            android:label="@string/title_activity_nrcircuit_first" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="isel.leic.poo.nrcircuit.android.NRCircuitLevelActivity"
-            android:label="@string/title_activity_nrcircuit_second" >
+            android:name="isel.leic.poo.nrcircuit.android.NRCircuitLevelActivity">
+        </activity>
+        <activity
+            android:name="isel.leic.poo.nrcircuit.android.NRCircuitGameActivity">
         </activity>
     </application>
 
