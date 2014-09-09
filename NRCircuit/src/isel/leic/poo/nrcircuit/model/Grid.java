@@ -128,6 +128,7 @@ public class Grid{
 			workingPlace = place;
 			return true;
 		}
+		workingPlace = null;
 		return false;
 	}
 	

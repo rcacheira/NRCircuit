@@ -55,6 +55,9 @@ public class CircuitTileFactory implements TileFactory {
 			return new TileOneWayConnector(parent, tileBounds, 
 					((OneWayConnector)place).getOrientation());
 		}
+		if(place instanceof NumberedConnector){
+			return new TileNumberedConnector(parent, tileBounds, ((NumberedConnector)place).orderNumber);
+		}
 		if(place instanceof Connector){
 			return new TileConnector(parent, tileBounds);
 		}
@@ -63,9 +66,6 @@ public class CircuitTileFactory implements TileFactory {
 		}
 		if(place instanceof Tunnel){
 			return new TileTunnel(parent, tileBounds);
-		}
-		if(place instanceof NumberedConnector){
-			return new TileNumberedConnector(parent, tileBounds, ((NumberedConnector)place).orderNumber);
 		}
 		throw new IllegalStateException("no tile defined for place type");
 	}
