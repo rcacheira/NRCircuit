@@ -76,12 +76,9 @@ public class GridSurrogate implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		System.out.println("GridSurrogate.writeToParcel");
 		if(links != null){
-			System.out.println("saving links");
 			dest.writeInt(links.size());
 			for (Link link : links) {
-				System.out.println("Saving: " + link);
 				new LinkSurrogate(link).writeToParcel(dest, flags);
 			}
 		}

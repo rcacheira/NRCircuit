@@ -18,7 +18,7 @@ import android.os.Bundle;
 
 public class NRCircuitController {
 	
-	private static final String VIEW_STATE_KEY = "isel.leic.poo.nrcircuit.android.viewstate.Paths";
+	private static final String VIEW_STATE_KEY = "isel.leic.poo.nrcircuit.links";
 	
 	/**
 	 * 
@@ -140,7 +140,9 @@ public class NRCircuitController {
 	 */
 	public void saveState(Bundle stateBundle)
 	{
+		System.out.println("saveState");
 		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
+		System.out.println("saveState 2");
 	}
 	
 	/**
@@ -182,7 +184,9 @@ public class NRCircuitController {
 	public static NRCircuitController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
 		NRCircuitController controller = new NRCircuitController(circuitView, messageView, gridFile);
 		
+		System.out.println("loadState");
 		controller.model.getGrid().setLinks(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getLinks());
+		System.out.println("loadState 2");
 		
 		return controller;
 	}

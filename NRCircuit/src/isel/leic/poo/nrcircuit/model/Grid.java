@@ -220,9 +220,7 @@ public class Grid{
 	}
 	
 	void fireOnLinkDoneEvent(Link link, char letter){
-		System.out.println("fireOnLinkDoneEvent origin:" + link.origin + " destiny:" + link.destiny);
 		if(gridActionListener != null){
-			System.out.println("gridActionListener != null");
 			gridActionListener.onLinkDone(link, letter);
 		}
 	}
@@ -258,7 +256,6 @@ public class Grid{
 	}
 	
 	public void fireLinkEvents(){
-		System.out.println("fireLinkEvents called");
 		for (Link link : links) {
 			fireOnLinkDoneEvent(link, getPlaceAtPosition(link.origin).getLetter());
 		}

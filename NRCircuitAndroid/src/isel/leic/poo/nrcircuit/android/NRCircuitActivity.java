@@ -17,7 +17,6 @@ import android.os.Bundle;
 
 public class NRCircuitActivity extends Activity {
 
-	private final static String LEVEL_KEY = "isel.leic.poo.nrcircuit.android.Activity.level";
 	private final static String LEVEL_PROGRESS_FILE_NAME = "d001";
 	
 	/**
@@ -120,17 +119,9 @@ public class NRCircuitActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nrcircuit);
-	
-//		level = (savedInstanceState != null) ? savedInstanceState.getInt(LEVEL_KEY) : loadLevelProgress();
 		
-		if(savedInstanceState != null){
-			level = savedInstanceState.getInt(LEVEL_KEY);
-			System.out.println("Load level from savedInstanceState: " + level);
-		}
-		else{
-			level = loadLevelProgress();
-			System.out.println("Load level progress: " + level);
-		}
+		level = loadLevelProgress();
+		System.out.println("Load level progress: " + level);
 		
 		circuitView = (CircuitView) findViewById(R.id.circuitView);
 		messageView = (MessageView) findViewById(R.id.messageView);
@@ -142,9 +133,6 @@ public class NRCircuitActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
-		outState.putInt(LEVEL_KEY, level);
-		
 		nrCircuitController.saveState(outState);
 	}
 

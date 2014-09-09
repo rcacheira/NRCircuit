@@ -6,7 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Class whose instance is used to serialize Path on Android 
+ * Class whose instance is used to serialize Link on Android 
  */
 public class LinkSurrogate implements Parcelable{
 	
@@ -26,6 +26,16 @@ public class LinkSurrogate implements Parcelable{
 	
 	private final Position origin;
 	private final Position destiny;
+	
+	public LinkSurrogate(Parcel source) {
+		origin = readPosition(source);
+		destiny = readPosition(source);
+	}
+	
+	public LinkSurrogate(Link link){
+		this.origin = link.origin;
+		this.destiny = link.destiny;
+	}
 
 	private void writePosition(Position position, Parcel dest){
 		dest.writeInt(position.row);
@@ -36,15 +46,8 @@ public class LinkSurrogate implements Parcelable{
 		return Position.get(source.readInt(), source.readInt());
 	}
 	
-	public LinkSurrogate(Parcel source) {
-		//AS letter is ASCII char there is no problem with this conversion
-		origin = readPosition(source);
-		destiny = readPosition(source);
-	}
-	
-	public LinkSurrogate(Link link){
-		this.origin = link.origin;
-		this.destiny = link.destiny;
+	public Link getLink(){
+		return new Link(origin, destiny);
 	}
 	
 	@Override
@@ -56,10 +59,6 @@ public class LinkSurrogate implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		writePosition(origin, dest);
 		writePosition(destiny, dest);
-	}
-	
-	public Link getLink(){
-		return new Link(origin, destiny);
 	}
 
 }
