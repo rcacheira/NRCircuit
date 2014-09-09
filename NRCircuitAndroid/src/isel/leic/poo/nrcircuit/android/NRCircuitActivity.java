@@ -118,11 +118,19 @@ public class NRCircuitActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_nrcircuit);
+		setContentView(R.layout.activity_nrcircuit_game);
 		
 		level = loadLevelProgress();
 		
 		level = 1;
+		
+//		TODO: Intent message.
+//		Bundle extras = this.getIntent().getExtras();
+//		if ( extras != null ) {
+//		  if ( extras.containsKey("Level") ) {
+//			  level = extras.getInt("Level");
+//		  }
+//		}
 		
 		System.out.println("Load level progress: " + level);
 		
