@@ -11,6 +11,7 @@ import isel.leic.poo.nrcircuit.model.Grid.FileBadFormatException;
 import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.ProhibitedPlace;
 import isel.leic.poo.nrcircuit.model.connectors.Connector;
+import isel.leic.poo.nrcircuit.model.connectors.NumberedConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
@@ -29,11 +30,11 @@ public class GridTests {
 	
 	public GridTests(){
 		goodStr = "#1 5x5";
-		goodStr+="\nA - - - .";
+		goodStr+="\nA - #1 #2 .";
 		goodStr+="\nB - - $t |";
 		goodStr+="\nC C * A $4";
 		goodStr+="\nB - - $t |";
-		goodStr+="\nA - - - .";
+		goodStr+="\nA - #4 #3 .";
 	}
 	
 	@Test
@@ -48,8 +49,8 @@ public class GridTests {
 		
 		assertThat(grid.getPlaceAtPosition(Position.get(0,0)), is(equalTo((Place)new FinalTerminal(Position.get(0, 0), 'A'))));
 		assertThat(grid.getPlaceAtPosition(Position.get(0,1)), is(equalTo((Place)new OneWayConnector(Position.get(0, 1), Orientation.HORIZONTAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(0,2)), is(equalTo((Place)new OneWayConnector(Position.get(0, 2), Orientation.HORIZONTAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(0,3)), is(equalTo((Place)new OneWayConnector(Position.get(0, 3), Orientation.HORIZONTAL))));
+		assertThat(grid.getPlaceAtPosition(Position.get(0,2)), is(equalTo((Place)new NumberedConnector(Position.get(0, 2), 1))));
+		assertThat(grid.getPlaceAtPosition(Position.get(0,3)), is(equalTo((Place)new NumberedConnector(Position.get(0, 3), 2))));
 		assertThat(grid.getPlaceAtPosition(Position.get(0,4)), is(equalTo((Place)new Connector(Position.get(0, 4)))));
 		
 		assertThat(grid.getPlaceAtPosition(Position.get(1,0)), is(equalTo((Place)new FinalTerminal(Position.get(1, 0), 'B'))));
@@ -72,8 +73,8 @@ public class GridTests {
 		
 		assertThat(grid.getPlaceAtPosition(Position.get(4,0)), is(equalTo((Place)new FinalTerminal(Position.get(4, 0), 'A'))));
 		assertThat(grid.getPlaceAtPosition(Position.get(4,1)), is(equalTo((Place)new OneWayConnector(Position.get(4, 1), Orientation.HORIZONTAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(4,2)), is(equalTo((Place)new OneWayConnector(Position.get(4, 2), Orientation.HORIZONTAL))));
-		assertThat(grid.getPlaceAtPosition(Position.get(4,3)), is(equalTo((Place)new OneWayConnector(Position.get(4, 3), Orientation.HORIZONTAL))));
+		assertThat(grid.getPlaceAtPosition(Position.get(4,2)), is(equalTo((Place)new NumberedConnector(Position.get(4, 2), 4))));
+		assertThat(grid.getPlaceAtPosition(Position.get(4,3)), is(equalTo((Place)new NumberedConnector(Position.get(4, 3), 3))));
 		assertThat(grid.getPlaceAtPosition(Position.get(4,4)), is(equalTo((Place)new Connector(Position.get(4, 4)))));
 	}
 	

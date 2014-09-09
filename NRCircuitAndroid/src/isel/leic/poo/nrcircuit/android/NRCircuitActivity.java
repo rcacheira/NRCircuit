@@ -54,7 +54,7 @@ public class NRCircuitActivity extends Activity {
 			return;
 		}
 		
-		System.out.println("Loading level " + NRCircuitActivity.this.level + " ... ");
+		System.out.println("Loading level " + level + " ... ");
 		
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(
@@ -117,26 +117,25 @@ public class NRCircuitActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		System.out.println("onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nrcircuit);
 		
 		level = loadLevelProgress();
+		
+		level = 1;
+		
 		System.out.println("Load level progress: " + level);
 		
 		circuitView = (CircuitView) findViewById(R.id.circuitView);
 		messageView = (MessageView) findViewById(R.id.messageView);
 		
 		createController(savedInstanceState);
-		System.out.println("onCreate2");
 	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		System.out.println("onSaveInstanceState");
 		super.onSaveInstanceState(outState);
 		nrCircuitController.saveState(outState);
-		System.out.println("onSaveInstanceState2");
 	}
 
 }

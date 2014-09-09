@@ -1,6 +1,7 @@
 package isel.leic.poo.nrcircuit.model;
 
 import isel.leic.poo.nrcircuit.model.connectors.Connector;
+import isel.leic.poo.nrcircuit.model.connectors.NumberedConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector.Orientation;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
@@ -24,7 +25,7 @@ import java.util.List;
 public class Grid{
 	
 	public static interface OnGridActionListener{
-		public void onLinkClear(Iterable<Link> placesRemoved);
+		public void onLinkClear(Link link);
 		public void onLinkDone(Link link, char letter);
 		public void onSetTunnelsLetter(char letter);
 	}
@@ -72,6 +73,8 @@ public class Grid{
 	
 	private OnGridActionListener gridActionListener;
 	
+	private OrderControl orderControl;
+	
 	public void setLinkListener(OnGridActionListener gridActionListener) {
 		this.gridActionListener = gridActionListener;
 	}
@@ -91,6 +94,7 @@ public class Grid{
 		grid = new Place[rows][columns];
 		tunnels = new LinkedList<Tunnel>();
 		links = new LinkedList<Link>();
+		orderControl = new OrderControl(); 
 		workingPlace = null;
 	}
 	
@@ -130,8 +134,10 @@ public class Grid{
 	public boolean doLink(Position position){
 		Place place = getPlaceAtPosition(position);
 		
-		if(place instanceof ProhibitedPlace || workingPlace == null || place instanceof Terminal 
-				&& place.getLetter() != Place.NO_LETTER && place.getLetter() != workingPlace.getLetter())
+		if(place instanceof ProhibitedPlace || workingPlace == null 
+				|| place instanceof Terminal 
+					&& place.getLetter() != Place.NO_LETTER 
+					&& place.getLetter() != workingPlace.getLetter())
 			return false;
 		
 		//verify if the link is going backwards
@@ -149,13 +155,19 @@ public class Grid{
 	
 	private boolean doLinkGoingForward(Place place){
 		if(!workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace) 
-				|| workingPlace.isFullLinked()){
+				|| workingPlace.isFullLinked()
+				|| place instanceof Terminal && place.isFullLinked()){
 			return false;
 		}
 		
 		clearLinks(place);
+		
+		//verification to don't permit infinite loops
+		if(workingPlace.getLetter() == Place.NO_LETTER || !orderControl.canLinkPlace(place))
+			return false;
 	
 		doLinkAux(workingPlace, place, true);
+		orderControl.linkedPlace(place);
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
 		links.add(link);
@@ -176,8 +188,9 @@ public class Grid{
 					if(sendEvents) fireOnSetTunnelsLetter(origin.getLetter());
 				}
 			}
-			else
+			else{
 				destiny.setLetter(origin.getLetter());
+			}
 		}
 	}
 	
@@ -185,7 +198,10 @@ public class Grid{
 		List<Link> linksCleared = new LinkedList<Link>();
 		place.clearFollowedLinks(linksCleared);
 		links.removeAll(linksCleared);
-		fireOnLinkClearEvent(linksCleared);
+		for (Link link : linksCleared) {
+			orderControl.unlikedPlace(getPlaceAtPosition(link.destiny));
+			fireOnLinkClearEvent(link);
+		}
 		checkTunnelsLinks();
 	}
 	
@@ -206,6 +222,7 @@ public class Grid{
 				return;
 		}
 		setTunnelsLetter(Place.NO_LETTER);
+		fireOnSetTunnelsLetter(Place.NO_LETTER);
 	}
 	
 	private void setTunnelsLetter(char letter) {
@@ -214,9 +231,9 @@ public class Grid{
 		}
 	}
 
-	void fireOnLinkClearEvent(Iterable<Link> placesRemoved){
+	void fireOnLinkClearEvent(Link link){
 		if(gridActionListener != null){
-			gridActionListener.onLinkClear(placesRemoved);
+			gridActionListener.onLinkClear(link);
 		}
 	}
 	
@@ -343,6 +360,11 @@ public class Grid{
 		}
 		if(prmtr.equalsIgnoreCase("$t")){
 			return new Tunnel(Position.get(row, column));
+		}
+		if(prmtr.startsWith("#")){
+			if(prmtr.length() > 1){
+				return new NumberedConnector(Position.get(row, column), prmtr.charAt(1) - '0');
+			}
 		}
 		if(prmtr.length() == 1 && (prmtr.charAt(0) >= 'A' && prmtr.charAt(0) <= 'Z'
 				|| prmtr.charAt(0) >= 'a' && prmtr.charAt(0) <= 'z')){

@@ -22,11 +22,9 @@ public class Circuit {
 		grid = Grid.loadGrid(bufReader);
 		grid.setLinkListener(new OnGridActionListener() {
 			@Override
-			public void onLinkClear(Iterable<Link> placesRemoved) {
+			public void onLinkClear(Link link) {
 				if(circuitActionListener != null){
-					for (Link link : placesRemoved) {
-						circuitActionListener.onLinkClear(link.origin, link.destiny);
-					}
+					circuitActionListener.onLinkClear(link.origin, link.destiny);
 				}
 			}
 

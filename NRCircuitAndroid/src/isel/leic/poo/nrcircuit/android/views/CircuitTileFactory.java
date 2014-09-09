@@ -6,6 +6,7 @@ import isel.leic.poo.nrcircuit.android.common.TileFactory;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileConnector;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileFinalTerminal;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileFork;
+import isel.leic.poo.nrcircuit.android.views.tiles.TileNumberedConnector;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileOneWayConnector;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileProhibitedPlace;
 import isel.leic.poo.nrcircuit.android.views.tiles.TileTunnel;
@@ -14,6 +15,7 @@ import isel.leic.poo.nrcircuit.model.Place;
 import isel.leic.poo.nrcircuit.model.Position;
 import isel.leic.poo.nrcircuit.model.ProhibitedPlace;
 import isel.leic.poo.nrcircuit.model.connectors.Connector;
+import isel.leic.poo.nrcircuit.model.connectors.NumberedConnector;
 import isel.leic.poo.nrcircuit.model.connectors.OneWayConnector;
 import isel.leic.poo.nrcircuit.model.terminals.FinalTerminal;
 import isel.leic.poo.nrcircuit.model.terminals.Fork;
@@ -61,6 +63,9 @@ public class CircuitTileFactory implements TileFactory {
 		}
 		if(place instanceof Tunnel){
 			return new TileTunnel(parent, tileBounds);
+		}
+		if(place instanceof NumberedConnector){
+			return new TileNumberedConnector(parent, tileBounds, ((NumberedConnector)place).orderNumber);
 		}
 		throw new IllegalStateException("no tile defined for place type");
 	}
