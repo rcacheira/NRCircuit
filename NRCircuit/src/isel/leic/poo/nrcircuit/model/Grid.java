@@ -157,7 +157,8 @@ public class Grid{
 	private boolean doLinkGoingForward(Place place){
 		if(!workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace) 
 				|| workingPlace.isFullLinked()
-				|| place instanceof Terminal && place.isFullLinked()){
+				|| place instanceof Terminal && place.isFullLinked()
+				|| !orderControl.canLinkPlace(place)){
 			return false;
 		}
 		

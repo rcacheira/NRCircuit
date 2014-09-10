@@ -1,15 +1,11 @@
 package isel.leic.poo.nrcircuit.android;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.LinkedList;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,36 +19,58 @@ import android.widget.TextView;
 
 public class NRCircuitModuleActivity extends Activity {
 	private LinearLayout layout;
-	private List<String> progress;
+	private LinkedList<String> progress;
+	private LinkedList<Button> buttons;
 	
 	private LinearLayout getLayout(){
 		if(layout == null){
-			layout = (LinearLayout)findViewById(R.id.container);
+			layout = (LinearLayout)findViewById(R.id.linearLayout);
 		}
 		return layout;
 	}
 	
-	private List<String> getProgress() throws IOException{
-		if(progress == null){
-			progress = new LinkedList<String>();
-			BufferedReader progress_reader;
-			try {
-				progress_reader = new BufferedReader(
-						new InputStreamReader(openFileInput(StaticValues.MODULES_PROGRESS_FILE)));
-				String line;
-				while((line = progress_reader.readLine()) != null){
-					progress.add(line);
-				}
-			} catch (FileNotFoundException e) {
-				System.out.println("no progress file for modules");
+	private void loadProgress() throws IOException{
+		progress = new LinkedList<String>();
+		BufferedReader progress_reader;
+		try {
+			progress_reader = new BufferedReader(
+					new InputStreamReader(openFileInput(StaticValues.MODULES_PROGRESS_FILE)));
+			String line;
+			while((line = progress_reader.readLine()) != null){
+				progress.add(line);
 			}
+		} catch (FileNotFoundException e) {
+			System.out.println("no progress file for modules");
 		}
-		return progress;
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.nrcircuit_linear_list);
+		
+		try {
+			loadProgress();
+			createButtons();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == StaticValues.LEVEL_REQUEST) {
+	        if(resultCode == RESULT_OK){
+	    		saveProgressModule(data.getExtras().getString(StaticValues.KEY_MODULE));
+	    		enableButtons();
+	        }
+		}
 	}
 	
 	private void saveProgressModule(String module){
 		try {
-			if(!getProgress().contains(module)){
+			if(!progress.contains(module)){
 				PrintStream out = new PrintStream(openFileOutput(StaticValues.MODULES_PROGRESS_FILE, MODE_APPEND));
 				out.println(module);
 				out.close();
@@ -65,35 +83,9 @@ public class NRCircuitModuleActivity extends Activity {
 		}
 	}
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_nrcircuit_module);
-		
-		if(getIntent().getExtras() != null 
-				&& getIntent().getExtras().containsKey(StaticValues.KEY_MODULE_FINISHED)
-				&& getIntent().getExtras().getBoolean(StaticValues.KEY_MODULE_FINISHED))
-			createModuleFinishedView();
-		else{
-			createNormalModuleView();
-		}
-	}
-	
-	private void createNormalModuleView(){
-		try {
-			createButtons();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void createModuleFinishedView(){
-		String module = getIntent().getExtras().getString(StaticValues.KEY_MODULE);
-		saveProgressModule(module);
-		finish();
-	}
-	
 	private void createButtons() throws IOException{
+		
+		buttons = new LinkedList<Button>();
 		
 		BufferedReader modules_reader = new BufferedReader(
 				new InputStreamReader(getAssets().open(StaticValues.MODULES_FILE)));
@@ -104,7 +96,7 @@ public class NRCircuitModuleActivity extends Activity {
 		boolean moduleEnabled = true;
 		while((line = modules_reader.readLine()) != null){
 			createModuleButton(line, moduleEnabled);
-			moduleEnabled = getProgress().contains(line);
+			moduleEnabled = progress.contains(line);
 		}
 		
 		addTextView("Options");
@@ -126,29 +118,29 @@ public class NRCircuitModuleActivity extends Activity {
 		bt.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				BufferedReader modules_reader;
-				try {
-					modules_reader = new BufferedReader(
-							new InputStreamReader(getAssets().open(StaticValues.MODULES_FILE)));
-					String module;
-					while((module = modules_reader.readLine()) != null){
-						try {
-							openFileOutput(StaticValues.MODULES_PROGRESS_FILE, 0).close();
-							openFileOutput(StaticValues.getModuleProgressFile(module), 0).close();
-						} catch (IOException e) {
-							System.out.println("Error rewriting file for module: " + module );
-							e.printStackTrace();
-						}
-					}
-				} catch (IOException e) {
-					System.out.println("Error with modules file");
-					e.printStackTrace();
-					return;
-				}
-				
+				resetGameProgress();
 			}
 		});
 		getLayout().addView(bt);
+	}
+	
+	private void resetGameProgress(){
+		BufferedReader modules_reader;
+		try {
+			openFileOutput(StaticValues.MODULES_PROGRESS_FILE, 0).close();
+			modules_reader = new BufferedReader(
+					new InputStreamReader(getAssets().open(StaticValues.MODULES_FILE)));
+			String module;
+			while((module = modules_reader.readLine()) != null){
+				openFileOutput(StaticValues.getModuleProgressFile(module), 0).close();
+			}
+			loadProgress();
+			enableButtons();
+		} catch (IOException e) {
+			System.out.println("Error rewriting modules file");
+			e.printStackTrace();
+			return;
+		}
 	}
 	
 	private void createModuleButton(final String module, boolean enabled){
@@ -163,12 +155,22 @@ public class NRCircuitModuleActivity extends Activity {
 			}
 		});
 		getLayout().addView(bt);
+		buttons.add(bt);
+	}
+	
+	private void enableButtons(){
+		boolean nextButtonEnabled = true;
+		for (Button bt : buttons) {
+			bt.setEnabled(nextButtonEnabled);
+			nextButtonEnabled = progress.contains(bt.getText());
+		}
 	}
 	
 	private void launchModule(String module){
-		Intent msg = new Intent(NRCircuitModuleActivity.this, isel.leic.poo.nrcircuit.android.NRCircuitLevelActivity.class);
+		Intent msg = new Intent(NRCircuitModuleActivity.this, 
+				isel.leic.poo.nrcircuit.android.NRCircuitLevelActivity.class);
 		msg.putExtra(StaticValues.KEY_MODULE, module);
-		startActivity(msg);
+		startActivityForResult(msg, StaticValues.MODULE_REQUEST);
 	}
 	
 }

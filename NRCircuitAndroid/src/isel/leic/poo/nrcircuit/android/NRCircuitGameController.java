@@ -18,8 +18,6 @@ import android.os.Bundle;
 
 public class NRCircuitGameController {
 	
-	private static final String VIEW_STATE_KEY = "isel.leic.poo.nrcircuit.links";
-	
 	/**
 	 * 
 	 * @author rcacheira & nreis
@@ -145,7 +143,7 @@ public class NRCircuitGameController {
 	 */
 	public void saveState(Bundle stateBundle)
 	{
-		stateBundle.putParcelable(VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
+		stateBundle.putParcelable(StaticValues.VIEW_STATE_KEY, new GridSurrogate(model.getGrid()));
 	}
 	
 	/**
@@ -187,7 +185,7 @@ public class NRCircuitGameController {
 	public static NRCircuitGameController createController(CircuitView circuitView, MessageView messageView, BufferedReader gridFile, Bundle savedInstanceState) throws IOException, FileBadFormatException{
 		NRCircuitGameController controller = new NRCircuitGameController(circuitView, messageView, gridFile);
 		
-		controller.model.getGrid().setLinks(((GridSurrogate) savedInstanceState.getParcelable(VIEW_STATE_KEY)).getLinks());
+		controller.model.getGrid().setLinks(((GridSurrogate) savedInstanceState.getParcelable(StaticValues.VIEW_STATE_KEY)).getLinks());
 		
 		return controller;
 	}

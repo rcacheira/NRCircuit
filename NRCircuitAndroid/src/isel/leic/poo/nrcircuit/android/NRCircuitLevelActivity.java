@@ -10,29 +10,35 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.GridLayout;
 
 public class NRCircuitLevelActivity extends Activity {
 	
-	private LinearLayout layout;
+	private GridLayout layout;
 	private List<Integer> levels;
 	private int lastLevel;
 	private int progress;
+	private LinkedList<Button> buttons;
 	
-	private LinearLayout getLayout(){
+	private GridLayout getLayout(){
 		if(layout == null){
-			layout = (LinearLayout)findViewById(R.id.container);
+			layout = (GridLayout)findViewById(R.id.gridLayout);
+			if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+				layout.setColumnCount(5);
+			else
+				layout.setColumnCount(8);
 		}
 		return layout;
 	}
 	
 	private String module;
 	
-	private void loadProgress(){
+	private void loadProgress() throws IOException{
 		BufferedReader level_progress_reader;
 		try {
 			level_progress_reader = new BufferedReader(
@@ -43,39 +49,36 @@ public class NRCircuitLevelActivity extends Activity {
 			}
 		} catch( FileNotFoundException e){
 			System.out.println("Progress file for module: " + module + " not found");
-		} catch (IOException e) {
-			System.out.println("Error loading progress file for module: " + module);
 		}
 	}
 	
-	private List<Integer> getLevels(){
-		if(levels == null){
-			levels = new LinkedList<Integer>();
-			try {
-				for(String file: getAssets().list(module)){
-					try{
-						Integer level = Integer.valueOf(file);
-						if(level > lastLevel)
-							lastLevel = level;
-						levels.add(level);
-					}
-					catch (NumberFormatException e) {
-						//Not a level file
-						continue;
-					}
+	private void loadLevels() throws IOException{
+		levels = new LinkedList<Integer>();
+		int i = 0;
+		for(String file: getAssets().list(module)){
+			try{
+				Integer level = Integer.valueOf(file);
+				if(level > lastLevel)
+					lastLevel = level;
+				levels.add(level);
+				if(++i >= 100){
+					System.out.println("One module can't have more than 100 levels");
+					break;
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			}
+			catch (NumberFormatException e) {
+				//Not a level file
+				continue;
 			}
 		}
-		return levels;
 	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		System.out.println("onCreate");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_nrcircuit_level);
+		setContentView(R.layout.nrcircuit_grid_list);
+		
 		levels = null;
 		lastLevel = 0;
 		
@@ -84,43 +87,35 @@ public class NRCircuitLevelActivity extends Activity {
 		module = getIntent().getExtras().getString(StaticValues.KEY_MODULE);
 		setTitle(module);
 		
-		loadProgress();
-		getLevels();
-		
-		if(getIntent().getExtras().containsKey(StaticValues.KEY_LEVEL_FINISHED)
-				&& getIntent().getExtras().getBoolean(StaticValues.KEY_LEVEL_FINISHED))
-			createLevelFinishedView();
-		else{
-			createLevelView();
-		}
-	}
-	
-	public void createLevelView(){
 		try {
+			loadProgress();
+			loadLevels();
 			createButtons();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void createLevelFinishedView(){
-		if(getIntent().getExtras() == null || !getIntent().getExtras().containsKey(StaticValues.KEY_LEVEL))
-			throw new IllegalStateException("No level key found");
-		
-		int level = getIntent().getExtras().getInt(StaticValues.KEY_LEVEL);
-		saveProgressLevel(level);
-		if(level < lastLevel){
-			launchLevel(level + 1);
-		}
-		else{
-			System.out.println("all module levels completed");
-			Intent msg = new Intent(NRCircuitLevelActivity.this, 
-					isel.leic.poo.nrcircuit.android.NRCircuitModuleActivity.class);
-			msg.putExtra(StaticValues.KEY_MODULE, module);
-			msg.putExtra(StaticValues.KEY_MODULE_FINISHED, true);
-			startActivity(msg);
-		}
-		finish();
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		System.out.println("onActivityResult");
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == StaticValues.LEVEL_REQUEST) {
+	        if(resultCode == RESULT_OK){
+	        	int level = data.getExtras().getInt(StaticValues.KEY_LEVEL);
+	        	saveProgressLevel(level);
+	        	if(level < lastLevel){
+	    			launchLevel(level + 1);
+	    			enableButtons();
+	    		}
+	    		else{
+	    			Intent msg = new Intent();
+					msg.putExtra(StaticValues.KEY_MODULE, module);
+					setResult(RESULT_OK, msg);
+					finish();
+	    		}
+	        }
+	    }
 	}
 	
 	private void saveProgressLevel(int level){
@@ -139,8 +134,9 @@ public class NRCircuitLevelActivity extends Activity {
 	}
 	
 	private void createButtons() throws IOException{
+		buttons = new LinkedList<Button>();
 		boolean nextLevelIsEnabled = true;
-		for(Integer level: getLevels()){
+		for(Integer level: levels){
 			createLevelButton(level, nextLevelIsEnabled);
 			nextLevelIsEnabled = level <= progress;
 		}
@@ -151,12 +147,12 @@ public class NRCircuitLevelActivity extends Activity {
 				isel.leic.poo.nrcircuit.android.NRCircuitGameActivity.class);
 		msg.putExtra(StaticValues.KEY_MODULE, module);
 		msg.putExtra(StaticValues.KEY_LEVEL, level);
-		startActivity(msg);
+		startActivityForResult(msg, StaticValues.LEVEL_REQUEST);
 	}
 	
 	private void createLevelButton(final int level, boolean enabled){
 		Button bt = new Button(this);
-		bt.setText("Level " + level);
+		bt.setText(String.valueOf(level));
 		bt.setEnabled(enabled);
 		bt.setOnClickListener(new OnClickListener() {
 			@Override
@@ -165,5 +161,14 @@ public class NRCircuitLevelActivity extends Activity {
 			}
 		});
 		getLayout().addView(bt);
+		buttons.add(bt);
+	}
+	
+	private void enableButtons(){
+		boolean nextButtonEnabled = true;
+		for (Button bt : buttons) {
+			bt.setEnabled(nextButtonEnabled);
+			nextButtonEnabled = Integer.valueOf(bt.getText().toString()) <= progress;
+		}
 	}
 }

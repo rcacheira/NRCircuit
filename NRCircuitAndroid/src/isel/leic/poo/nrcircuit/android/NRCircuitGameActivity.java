@@ -21,8 +21,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class NRCircuitGameActivity extends Activity {
-
-	private final static String LEVEL_PROGRESS_FILE_NAME = "d001";
 	
 	/**
 	 * The associated controller instance
@@ -56,7 +54,7 @@ public class NRCircuitGameActivity extends Activity {
 	 * @param savedInstanceState
 	 */
 	private void createController(Bundle savedInstanceState){
-		String moduleLevel = module + "/" + level;
+		String moduleLevel = module + "/" + String.format("%02d", level);
 		System.out.println("Loading level " + moduleLevel + " ... ");
 		
 		try {
@@ -76,12 +74,10 @@ public class NRCircuitGameActivity extends Activity {
 					levelFinished.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View arg0) {
-							Intent msg = new Intent(NRCircuitGameActivity.this, 
-									isel.leic.poo.nrcircuit.android.NRCircuitLevelActivity.class);
+							Intent msg = new Intent();
 							msg.putExtra(StaticValues.KEY_MODULE, module);
 							msg.putExtra(StaticValues.KEY_LEVEL, level);
-							msg.putExtra(StaticValues.KEY_LEVEL_FINISHED, true);
-							startActivity(msg);
+							setResult(RESULT_OK, msg);
 							finish();
 						}
 					});
