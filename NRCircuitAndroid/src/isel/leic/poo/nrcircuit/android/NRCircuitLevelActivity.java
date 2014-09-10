@@ -32,7 +32,6 @@ public class NRCircuitLevelActivity extends Activity {
 		try {
 			createButtons();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

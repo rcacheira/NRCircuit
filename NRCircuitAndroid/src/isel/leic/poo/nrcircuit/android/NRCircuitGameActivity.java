@@ -10,7 +10,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class NRCircuitGameActivity extends Activity {
 
@@ -30,6 +37,8 @@ public class NRCircuitGameActivity extends Activity {
 	 * The application view instance
 	 */
 	private MessageView messageView;
+	
+	private Button levelFinished;
 	
 	/**
 	 * The current game level
@@ -61,6 +70,27 @@ public class NRCircuitGameActivity extends Activity {
 			nrCircuitController.setOnLevelFinishedListener(new OnLevelFinishedListener(){
 				@Override
 				public void levelFinished() {
+					levelFinished.setVisibility(View.VISIBLE);
+					levelFinished.setEnabled(true);
+					levelFinished.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View arg0) {
+							int levell = (level.split("level")[1].toCharArray()[0]-'0')+1;
+							//TODO: Error in final level of module
+							level="level"+levell;
+							createController(null);
+							resetLevelFinished();							
+						}
+					});
+				}
+					
+					@Override
+					public void resetLevelFinished() {
+						levelFinished.setVisibility(View.GONE);
+						levelFinished.setEnabled(false);
+					}
+					
 //					System.out.println("Level " + NRCircuitGameActivity.this.level + " Finished !!");
 //					try {
 //						saveLevelProgress(level+1);
@@ -70,7 +100,6 @@ public class NRCircuitGameActivity extends Activity {
 //					System.out.println("Level progress saved !!!");
 //					NRCircuitGameActivity.this.level+=1;
 //					createController(null);
-				}
 			});
 		} catch (IOException | FileBadFormatException e) {
 			e.printStackTrace();
@@ -110,8 +139,11 @@ public class NRCircuitGameActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_nrcircuit_game);
+		super.onCreate(savedInstanceState);		
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			setContentView(R.layout.activity_nrcircuit_game_vertical);
+		else
+			setContentView(R.layout.activity_nrcircuit_game_horizontal);
 		
 //		level = loadLevelProgress();
 		
@@ -129,8 +161,23 @@ public class NRCircuitGameActivity extends Activity {
 		
 		circuitView = (CircuitView) findViewById(R.id.circuitView);
 		messageView = (MessageView) findViewById(R.id.messageView);
+		levelFinished = (Button) findViewById(R.id.button1);
 		
 		createController(savedInstanceState);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater mif = getMenuInflater();
+		mif.inflate(R.menu.nrcircuit_game, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getItemId() == R.id.exit)
+			finish();
+		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override

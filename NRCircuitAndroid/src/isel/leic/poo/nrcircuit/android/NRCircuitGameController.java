@@ -27,6 +27,7 @@ public class NRCircuitGameController {
 	 */
 	public interface OnLevelFinishedListener{
 		public void levelFinished();
+		public void resetLevelFinished();
 	}
 	
 	/**
@@ -86,6 +87,10 @@ public class NRCircuitGameController {
 				if(model.setWorkingPlace(Position.get(evt.row, evt.column))){
 					lastRow = model.getLastPlacePosition().row;
 					lastColumn = model.getLastPlacePosition().column;
+					if(!model.isCircuitFinished()){
+						if (levelFinishedListener != null)
+							levelFinishedListener.resetLevelFinished();
+					}
 					return true;
 				}
 				return false;

@@ -20,4 +20,14 @@
         android:layout_below="@+id/circuitView"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:enabled="false"
+        android:text="@string/next_level_button"
+        android:visibility="invisible" />
+
 </RelativeLayout>
