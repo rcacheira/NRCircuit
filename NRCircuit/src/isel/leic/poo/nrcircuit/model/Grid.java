@@ -168,7 +168,6 @@ public class Grid{
 			return false;
 	
 		doLinkAux(workingPlace, place, true);
-		orderControl.linkedPlace(place);
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
 		links.add(link);
@@ -191,6 +190,7 @@ public class Grid{
 			}
 			else{
 				destiny.setLetter(origin.getLetter());
+				orderControl.linkedPlace(destiny);
 			}
 		}
 	}

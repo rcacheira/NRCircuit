@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
@@ -43,7 +44,7 @@ public class NRCircuitGameActivity extends Activity {
 	/**
 	 * The current game level
 	 */
-	private String level;
+	private int level;
 	
 	/**
 	 * The current game module
@@ -73,69 +74,29 @@ public class NRCircuitGameActivity extends Activity {
 					levelFinished.setVisibility(View.VISIBLE);
 					levelFinished.setEnabled(true);
 					levelFinished.setOnClickListener(new OnClickListener() {
-
 						@Override
 						public void onClick(View arg0) {
-							int levell = (level.split("level")[1].toCharArray()[0]-'0')+1;
-							//TODO: Error in final level of module
-							level="level"+levell;
-							createController(null);
-							resetLevelFinished();							
+							Intent msg = new Intent(NRCircuitGameActivity.this, 
+									isel.leic.poo.nrcircuit.android.NRCircuitLevelActivity.class);
+							msg.putExtra(StaticValues.KEY_MODULE, module);
+							msg.putExtra(StaticValues.KEY_LEVEL, level);
+							msg.putExtra(StaticValues.KEY_LEVEL_FINISHED, true);
+							startActivity(msg);
+							finish();
 						}
 					});
 				}
 					
-					@Override
-					public void resetLevelFinished() {
-						levelFinished.setVisibility(View.GONE);
-						levelFinished.setEnabled(false);
-					}
-					
-//					System.out.println("Level " + NRCircuitGameActivity.this.level + " Finished !!");
-//					try {
-//						saveLevelProgress(level+1);
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//					System.out.println("Level progress saved !!!");
-//					NRCircuitGameActivity.this.level+=1;
-//					createController(null);
+				@Override
+				public void resetLevelFinished() {
+					levelFinished.setVisibility(View.GONE);
+					levelFinished.setEnabled(false);
+				}
 			});
 		} catch (IOException | FileBadFormatException e) {
 			e.printStackTrace();
 		}
 	}
-	
-//	/**
-//	 * Saves the level in which the user is currently.
-//	 * 
-//	 * @param level	Level to be saved.
-//	 * @throws IOException
-//	 */
-//	private void saveLevelProgress(int level) throws IOException{
-//		DataOutputStream dos = new DataOutputStream(openFileOutput(LEVEL_PROGRESS_FILE_NAME, 0));
-//		dos.writeInt(level);
-//		dos.close();
-//	}
-//	
-//	/**
-//	 * Loads the level which the user saved, or stopped.
-//	 * If there is no level saved it loads level 1.
-//	 * 
-//	 * @return	The level saved. If none, loads level 1.
-//	 */
-//	private int loadLevelProgress(){
-//		int level = 1;
-//		try {
-//			DataInputStream dis = new DataInputStream(openFileInput(LEVEL_PROGRESS_FILE_NAME));
-//			level = dis.readInt();
-//			dis.close();
-//		}
-//		catch(IOException e){
-//			e.printStackTrace();
-//		}
-//		return level;
-//	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -145,18 +106,17 @@ public class NRCircuitGameActivity extends Activity {
 		else
 			setContentView(R.layout.activity_nrcircuit_game_horizontal);
 		
-//		level = loadLevelProgress();
-		
 		if(savedInstanceState != null){
-			module = savedInstanceState.getString("Module");
-			level = savedInstanceState.getString("Level");
+			module = savedInstanceState.getString(StaticValues.KEY_MODULE);
+			level = savedInstanceState.getInt(StaticValues.KEY_LEVEL);
 		}
 		else{
 			Bundle extras = this.getIntent().getExtras();
-			if ( extras != null && extras.containsKey("Module") 
-					&& extras.containsKey("Level") )
-				module = extras.getString("Module");
-				level = extras.getString("Level");
+			if ( extras == null || !extras.containsKey(StaticValues.KEY_MODULE) 
+					|| !extras.containsKey(StaticValues.KEY_LEVEL) )
+				throw new IllegalStateException("Necessary keys not found");
+			module = extras.getString(StaticValues.KEY_MODULE);
+			level = extras.getInt(StaticValues.KEY_LEVEL);
 		}
 		
 		circuitView = (CircuitView) findViewById(R.id.circuitView);
@@ -183,8 +143,8 @@ public class NRCircuitGameActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString("Module", module);
-		outState.putString("Level", level);
+		outState.putString(StaticValues.KEY_MODULE, module);
+		outState.putInt(StaticValues.KEY_LEVEL, level);
 		nrCircuitController.saveState(outState);
 	}
 
