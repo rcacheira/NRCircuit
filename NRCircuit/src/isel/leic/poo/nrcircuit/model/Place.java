@@ -59,31 +59,31 @@ public abstract class Place {
 	/**
 	 * Clear links array
 	 * 
-	 * @param placesCleared
+	 * @param linksCleared
 	 */
-	private void clearLinksArr(List<Link> placesCleared){
-		if(placesCleared == null)
+	private void clearLinksArr(List<Link> linksCleared){
+		if(linksCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
 		for (int i=0; i<linksUsed; i++) {
 			if(links[i] != null){
-				placesCleared.add(new Link(this.position, links[i].position));
-				links[i].clearLinks(placesCleared);
+				linksCleared.add(new Link(this.position, links[i].position));
+				links[i].clearLinks(linksCleared);
 				links[i] = null;
 			}
 		}
 		linksUsed = 0;
 	}
 	
-	public void clearFollowedLinks(List<Link> placesCleared){
-		if(placesCleared == null)
+	public void clearFollowedLinks(List<Link> linksCleared){
+		if(linksCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
-		clearLinksArr(placesCleared);
+		clearLinksArr(linksCleared);
 	}
 	
-	private void clearLinks(List<Link> placesCleared){
-		if(placesCleared == null)
+	private void clearLinks(List<Link> linksCleared){
+		if(linksCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
-		clearLinksArr(placesCleared);
+		clearLinksArr(linksCleared);
 		especificClearWork();
 	}
 	
@@ -102,7 +102,7 @@ public abstract class Place {
 	
 	public boolean isLinkedWith(Place place){
 		for (Place link : links) {
-			if(link == place)
+			if(link != null && (link == place || link.isLinkedWith(place)))
 				return true;
 		}
 		return false;

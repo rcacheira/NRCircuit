@@ -95,4 +95,9 @@ public class Fork extends Terminal {
 		super.especificClearWork();
 		setLetter(NO_LETTER);
 	}
+	
+	@Override
+	public boolean isFullLinked() {
+		return super.isFullLinked() && isEndOrBeginOfPath();
+	}
 }

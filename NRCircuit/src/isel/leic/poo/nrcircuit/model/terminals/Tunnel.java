@@ -28,4 +28,9 @@ public class Tunnel extends Terminal {
 		
 		return false;
 	}
+	
+	@Override
+	public boolean isFullLinked() {
+		return isEndOrBeginOfPath();
+	}
 }

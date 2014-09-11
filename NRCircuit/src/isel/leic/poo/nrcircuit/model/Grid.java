@@ -135,10 +135,7 @@ public class Grid{
 	public boolean doLink(Position position){
 		Place place = getPlaceAtPosition(position);
 		
-		if(place instanceof ProhibitedPlace || workingPlace == null 
-				|| place instanceof Terminal 
-					&& place.getLetter() != Place.NO_LETTER 
-					&& place.getLetter() != workingPlace.getLetter())
+		if(place instanceof ProhibitedPlace || workingPlace == null)
 			return false;
 		
 		//verify if the link is going backwards
@@ -155,20 +152,24 @@ public class Grid{
 	}
 	
 	private boolean doLinkGoingForward(Place place){
-		if(!workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace) 
-				|| workingPlace.isFullLinked()
-				|| place instanceof Terminal && place.isFullLinked()
-				|| !orderControl.canLinkPlace(place)){
+		if((place instanceof Terminal 
+				&& place.getLetter() != Place.NO_LETTER 
+				&& place.getLetter() != workingPlace.getLetter())
+			|| !workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace) 
+			|| workingPlace.isFullLinked()
+			|| !orderControl.canLinkPlace(place)){
 			return false;
 		}
 		
 		clearLinks(place);
 		
-		//verification to don't permit infinite loops
-		if(workingPlace.getLetter() == Place.NO_LETTER || !orderControl.canLinkPlace(place))
+		//verification if the order continues to be accepted after clearLinks
+		if(!orderControl.canLinkPlace(place)
+				|| place instanceof Terminal && place.isFullLinked())
 			return false;
 	
 		doLinkAux(workingPlace, place, true);
+		
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
 		links.add(link);
@@ -216,6 +217,8 @@ public class Grid{
 			clearFollowedLinks(grid[place.position.row][place.position.column-1]);
 		else if(place.position.column < columns-1 && grid[place.position.row][place.position.column+1].isLinkedWith(place))
 			clearFollowedLinks(grid[place.position.row][place.position.column+1]);
+		else
+			clearFollowedLinks(grid[place.position.row][place.position.column]);
 	}
 	
 	private void checkTunnelsLinks(){
@@ -409,7 +412,7 @@ public class Grid{
 			}
 			loadLineGrid(grid, nRows++, line);
 		}
-		if(nRows < grid.columns){
+		if(nRows < grid.rows){
 			throw new FileBadFormatException("Less rows on file than rows size");
 		}
 		
