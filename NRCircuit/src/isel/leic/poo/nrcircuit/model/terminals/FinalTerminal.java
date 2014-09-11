@@ -35,8 +35,13 @@ public class FinalTerminal extends Terminal {
 	}
 	
 	@Override
+	protected void especificClearWork() {
+		//do nothing
+	}
+	
+	@Override
 	public boolean isFullLinked() {
-		return isEndOrBeginOfPath();
+		return super.isFullLinked() || previousLink != null;
 	}
 
 }

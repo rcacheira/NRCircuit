@@ -121,13 +121,18 @@ public class Grid{
 		Place place = getPlaceAtPosition(position);
 		if(place instanceof ProhibitedPlace)
 			return false;
-		if(place instanceof FinalTerminal || place.getLetter() != Place.NO_LETTER){
+		
+		if(place.getLetter() != Place.NO_LETTER){
+			if((place instanceof FinalTerminal || place instanceof Tunnel)
+					&& place.getPrevious() != null)
+				clearPreviousLinks(place);
 			if(!(place instanceof Fork) || place.isFullLinked()){
 				clearFollowedLinks(place);
 			}
 			workingPlace = place;
 			return true;
 		}
+		
 		workingPlace = null;
 		return false;
 	}
@@ -168,7 +173,7 @@ public class Grid{
 				|| place instanceof Terminal && place.isFullLinked())
 			return false;
 	
-		doLinkAux(workingPlace, place, true);
+		doLinkWork(workingPlace, place, true);
 		
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
@@ -177,10 +182,9 @@ public class Grid{
 		return true;
 	}
 	
-	private void doLinkAux(Place origin, Place destiny, boolean sendEvents){
+	private void doLinkWork(Place origin, Place destiny, boolean sendEvents){
 		origin.addLink(destiny);
-		if(destiny instanceof Terminal) 
-			((Terminal)destiny).setEndOfPath(true);
+		destiny.addPreviousLink(origin);
 		
 		if(!(destiny instanceof FinalTerminal)){
 			if(destiny instanceof Tunnel){
@@ -197,9 +201,20 @@ public class Grid{
 		}
 	}
 	
+	
+	private void clearPreviousLinks(Place place){
+		List<Link> linksCleared = new LinkedList<Link>();
+		place.clearPreviousLinks(linksCleared);
+		links.removeAll(linksCleared);
+		for (Link link : linksCleared) {
+			orderControl.unlikedPlace(getPlaceAtPosition(link.destiny));
+			fireOnLinkClearEvent(link);
+		}
+		checkTunnelsLinks();
+	}
 	private void clearFollowedLinks(Place place){
 		List<Link> linksCleared = new LinkedList<Link>();
-		place.clearFollowedLinks(linksCleared);
+		place.clearLinks(linksCleared);
 		links.removeAll(linksCleared);
 		for (Link link : linksCleared) {
 			orderControl.unlikedPlace(getPlaceAtPosition(link.destiny));
@@ -209,21 +224,14 @@ public class Grid{
 	}
 	
 	private void clearLinks(Place place){
-		if(place.position.row > 0 && grid[place.position.row-1][place.position.column].isLinkedWith(place))
-			clearFollowedLinks(grid[place.position.row-1][place.position.column]);
-		else if(place.position.row < rows-1 && grid[place.position.row+1][place.position.column].isLinkedWith(place))
-			clearFollowedLinks(grid[place.position.row+1][place.position.column]);
-		else if(place.position.column > 0 && grid[place.position.row][place.position.column-1].isLinkedWith(place))
-			clearFollowedLinks(grid[place.position.row][place.position.column-1]);
-		else if(place.position.column < columns-1 && grid[place.position.row][place.position.column+1].isLinkedWith(place))
-			clearFollowedLinks(grid[place.position.row][place.position.column+1]);
-		else
-			clearFollowedLinks(grid[place.position.row][place.position.column]);
+		if(place.getPrevious() != null)
+			clearFollowedLinks(place.getPrevious());
+		clearFollowedLinks(place);
 	}
 	
 	private void checkTunnelsLinks(){
 		for (Tunnel tunnel : tunnels) {
-			if(tunnel.isEndOrBeginOfPath())
+			if(tunnel.isFullLinked())
 				return;
 		}
 		setTunnelsLetter(Place.NO_LETTER);
@@ -293,7 +301,7 @@ public class Grid{
 		}
 		
 		for (Link link : links) {
-			doLinkAux(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
+			doLinkWork(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
 			this.links.add(link);
 		}
 	}
@@ -303,10 +311,7 @@ public class Grid{
 			for (Place place : places) {
 				if(place instanceof ProhibitedPlace)
 					continue;
-				if(place instanceof Terminal && !((Terminal)place).isEndOrBeginOfPath())
-					return false;
-				if(!(place instanceof Terminal) && 
-						(place.getLetter() == Place.NO_LETTER || !place.isFullLinked()))
+				if(place.getLetter() == Place.NO_LETTER || !place.isFullLinked())
 					return false;
 			}
 		}

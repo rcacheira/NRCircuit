@@ -20,6 +20,7 @@ public abstract class Place {
 	public final Position position;
 	
 	protected final Place[] links;
+	protected Place previousLink;
 	private final int nLinks;
 	private int linksUsed;
 	
@@ -37,6 +38,7 @@ public abstract class Place {
 		this.nLinks = nLinks;
 		links = new Place[nLinks];
 		linksUsed = 0;
+		previousLink = null;
 		letter = NO_LETTER;
 	}
 	
@@ -56,35 +58,41 @@ public abstract class Place {
 		return cDelta + rDelta == 1;
 	}
 	
+	public void clearPreviousLinks(List<Link> linksCleared){
+		if(previousLink != null){
+			previousLink.clearPreviousLinks(linksCleared);
+			return;
+		}
+		deleteLinks(linksCleared);
+	}
+	
+	public void clearLinks(List<Link> linksCleared){
+		if(linksCleared == null)
+			throw new IllegalArgumentException("placesCleared can't be null");
+		deleteLinks(linksCleared);
+	}
+	
 	/**
-	 * Clear links array
+	 * Clear all links
 	 * 
 	 * @param linksCleared
 	 */
-	private void clearLinksArr(List<Link> linksCleared){
+	private void deleteLinks(List<Link> linksCleared){
 		if(linksCleared == null)
 			throw new IllegalArgumentException("placesCleared can't be null");
-		for (int i=0; i<linksUsed; i++) {
-			if(links[i] != null){
-				linksCleared.add(new Link(this.position, links[i].position));
-				links[i].clearLinks(linksCleared);
-				links[i] = null;
+		if(linksUsed > 0){
+			for (int i=0; i<linksUsed; i++) {
+				if(links[i] != null){
+					linksCleared.add(new Link(this.position, links[i].position));
+					links[i].deleteLinks(linksCleared);
+					links[i].previousLink = null;
+					links[i].especificClearWork();
+					links[i] = null;
+				}
 			}
+			linksUsed = 0;
 		}
-		linksUsed = 0;
-	}
-	
-	public void clearFollowedLinks(List<Link> linksCleared){
-		if(linksCleared == null)
-			throw new IllegalArgumentException("placesCleared can't be null");
-		clearLinksArr(linksCleared);
-	}
-	
-	private void clearLinks(List<Link> linksCleared){
-		if(linksCleared == null)
-			throw new IllegalArgumentException("placesCleared can't be null");
-		clearLinksArr(linksCleared);
-		especificClearWork();
+		
 	}
 	
 	protected void especificClearWork(){
@@ -97,7 +105,16 @@ public abstract class Place {
 		if(linksUsed < nLinks){
 			links[linksUsed++] = place;
 		}
-		else throw new IllegalStateException("Triyng to add more than possible links");
+		else throw new IllegalStateException("Trying to add more than possible links");
+	}
+	
+	public void addPreviousLink(Place place){
+		if(place == null)
+			throw new IllegalArgumentException("place can't be null");
+		if(previousLink == null){
+			previousLink = place;
+		}
+		else throw new IllegalStateException("Trying to add more than possible previous links");
 	}
 	
 	public boolean isLinkedWith(Place place){
@@ -110,6 +127,10 @@ public abstract class Place {
 	
 	public boolean isFullLinked(){
 		return nLinks == linksUsed;
+	}
+	
+	public Place getPrevious() {
+		return previousLink;
 	}
 	
 	public char getLetter() {
