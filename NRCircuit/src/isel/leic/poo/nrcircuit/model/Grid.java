@@ -140,7 +140,10 @@ public class Grid{
 	public boolean doLink(Position position){
 		Place place = getPlaceAtPosition(position);
 		
-		if(place instanceof ProhibitedPlace || workingPlace == null)
+		if(place instanceof ProhibitedPlace 
+				|| workingPlace == null
+				|| !workingPlace.canBeLinkedTo(place) 
+				|| !place.canBeLinkedTo(workingPlace))
 			return false;
 		
 		//verify if the link is going backwards
@@ -160,20 +163,19 @@ public class Grid{
 		if((place instanceof Terminal 
 				&& place.getLetter() != Place.NO_LETTER 
 				&& place.getLetter() != workingPlace.getLetter())
-			|| !workingPlace.canBeLinkedTo(place) || !place.canBeLinkedTo(workingPlace) 
 			|| workingPlace.isFullLinked()
-			|| !orderControl.canLinkPlace(place)){
+			|| !orderControl.canLinkPlace(workingPlace.getLetter(), place)){
 			return false;
 		}
 		
 		clearLinks(place);
 		
 		//verification if the order continues to be accepted after clearLinks
-		if(!orderControl.canLinkPlace(place)
+		if(!orderControl.canLinkPlace(workingPlace.getLetter(), place)
 				|| place instanceof Terminal && place.isFullLinked())
 			return false;
 	
-		doLinkWork(workingPlace, place, true);
+		linkWork(workingPlace, place, true);
 		
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
@@ -182,14 +184,14 @@ public class Grid{
 		return true;
 	}
 	
-	private void doLinkWork(Place origin, Place destiny, boolean sendEvents){
+	private void linkWork(Place origin, Place destiny, boolean sendEvents){
 		origin.addLink(destiny);
 		destiny.addPreviousLink(origin);
 		
 		if(!(destiny instanceof FinalTerminal)){
 			if(destiny instanceof Tunnel){
 				if(destiny.getLetter() == Place.NO_LETTER){
-					//this verification is to set all tunnels letter
+					//Verification is to set all tunnels letter
 					setTunnelsLetter(origin.getLetter());
 					if(sendEvents) fireOnSetTunnelsLetter(origin.getLetter());
 				}
@@ -201,26 +203,26 @@ public class Grid{
 		}
 	}
 	
-	
-	private void clearPreviousLinks(Place place){
-		List<Link> linksCleared = new LinkedList<Link>();
-		place.clearPreviousLinks(linksCleared);
+	private void removeClearedLinks(List<Link> linksCleared, char letter){
 		links.removeAll(linksCleared);
 		for (Link link : linksCleared) {
-			orderControl.unlikedPlace(getPlaceAtPosition(link.destiny));
+			orderControl.unlinkedPlace(letter, getPlaceAtPosition(link.destiny));
 			fireOnLinkClearEvent(link);
 		}
 		checkTunnelsLinks();
 	}
+	
+	private void clearPreviousLinks(Place place){
+		char letter = place.getLetter();
+		List<Link> linksCleared = new LinkedList<Link>();
+		place.clearPreviousLinks(linksCleared);
+		removeClearedLinks(linksCleared, letter);
+	}
 	private void clearFollowedLinks(Place place){
+		char letter = place.getLetter();
 		List<Link> linksCleared = new LinkedList<Link>();
 		place.clearLinks(linksCleared);
-		links.removeAll(linksCleared);
-		for (Link link : linksCleared) {
-			orderControl.unlikedPlace(getPlaceAtPosition(link.destiny));
-			fireOnLinkClearEvent(link);
-		}
-		checkTunnelsLinks();
+		removeClearedLinks(linksCleared, letter);
 	}
 	
 	private void clearLinks(Place place){
@@ -301,7 +303,7 @@ public class Grid{
 		}
 		
 		for (Link link : links) {
-			doLinkWork(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
+			linkWork(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
 			this.links.add(link);
 		}
 	}

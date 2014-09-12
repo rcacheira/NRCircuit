@@ -1,30 +1,39 @@
 package isel.leic.poo.nrcircuit.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import isel.leic.poo.nrcircuit.model.connectors.NumberedConnector;
 
 public class OrderControl {
 
-	int lastOrder;
+	private Map<Character, Integer> lastOrders;
 	
 	public OrderControl() {
-		lastOrder = 0;
+		lastOrders = new HashMap<Character, Integer>();
 	}
 
-	public boolean canLinkPlace(Place place){
-		if(place instanceof NumberedConnector)
-			return ((NumberedConnector)place).orderNumber - lastOrder == 1;
+	public boolean canLinkPlace(char letter, Place place){
+		if(place instanceof NumberedConnector){
+			if(lastOrders.containsKey(letter)){
+				return ((NumberedConnector)place).orderNumber - lastOrders.get(letter) == 1;
+			}
+			return ((NumberedConnector)place).orderNumber == 1;
+		}
 		return true;
 	}
 	
 	public void linkedPlace(Place place){
 		if(place instanceof NumberedConnector)
-			lastOrder = ((NumberedConnector)place).orderNumber;
+			lastOrders.put(place.getLetter(), ((NumberedConnector)place).orderNumber);
 	}
 	
-	public void unlikedPlace(Place place){
+	public void unlinkedPlace(char letter, Place place){
 		if(place instanceof NumberedConnector
-				&& ((NumberedConnector)place).orderNumber <= lastOrder)
-			lastOrder = ((NumberedConnector)place).orderNumber-1;
+				&& lastOrders.containsKey(letter)
+				&& ((NumberedConnector)place).orderNumber <= lastOrders.get(letter)){
+			lastOrders.put(letter, ((NumberedConnector)place).orderNumber-1);
+		}
 	}
 	
 }
