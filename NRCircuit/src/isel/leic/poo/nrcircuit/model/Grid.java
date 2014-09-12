@@ -110,6 +110,12 @@ public class Grid{
 		return !(position.column < 0 || position.column >= columns || position.row < 0 || position.row >= rows);
 	}
 	
+	/**
+	 * get the place at given position
+	 * 
+	 * @param position {@code Place} {@code Position}
+	 * @return {@code Place} at given {@code Position}
+	 */
 	public Place getPlaceAtPosition(Position position){
 		if(!isCoordinateWithinBounds(position))
 			throw new IllegalArgumentException();
@@ -117,6 +123,13 @@ public class Grid{
 		return grid[position.row][position.column];
 	}
 	
+	/**
+	 * Tries to set a new working place with position
+	 * 
+	 * @param position {@code Place} {@code Position}
+	 * @return {@code true} if the place at position could be set as working, 
+	 * {@code false} otherwise
+	 */
 	public boolean setWorkingPlace(Position position){
 		Place place = getPlaceAtPosition(position);
 		if(place instanceof ProhibitedPlace)
@@ -137,6 +150,12 @@ public class Grid{
 		return false;
 	}
 	
+	/**
+	 * Tries to do a new link from working place to place with given position 
+	 * 
+	 * @param position next place link position
+	 * @return {@code true} if link was made, {@code false} other wise
+	 */
 	public boolean doLink(Position position){
 		Place place = getPlaceAtPosition(position);
 		
@@ -153,12 +172,24 @@ public class Grid{
 		return doLinkGoingForward(place);
 	}
 	
+	/**
+	 * Works a link going back
+	 * 
+	 * @param position next place link position
+	 * @return {@code true} if link was made, {@code false} other wise
+	 */
 	private boolean doLinkGoingBackwards(Place place){
 		clearFollowedLinks(place);
 		workingPlace = place;
 		return true;
 	}
 	
+	/**
+	 * Works a link going forward
+	 * 
+	 * @param place
+	 * @return
+	 */
 	private boolean doLinkGoingForward(Place place){
 		if((place instanceof Terminal 
 				&& place.getLetter() != Place.NO_LETTER 
@@ -168,14 +199,14 @@ public class Grid{
 			return false;
 		}
 		
-		clearLinks(place);
+		clearPlaceLinks(place);
 		
 		//verification if the order continues to be accepted after clearLinks
 		if(!orderControl.canLinkPlace(workingPlace.getLetter(), place)
 				|| place instanceof Terminal && place.isFullLinked())
 			return false;
 	
-		linkWork(workingPlace, place, true);
+		newLinkWork(workingPlace, place, true);
 		
 		Link link = new Link(workingPlace.position, place.position);
 		fireOnLinkDoneEvent(link, workingPlace.getLetter());
@@ -184,7 +215,14 @@ public class Grid{
 		return true;
 	}
 	
-	private void linkWork(Place origin, Place destiny, boolean sendEvents){
+	/**
+	 * Works to do when createing a new link
+	 * 
+	 * @param origin origin {@code Place}
+	 * @param destiny destiny {@code Place}
+	 * @param sendEvents authorization to launch events
+	 */
+	private void newLinkWork(Place origin, Place destiny, boolean sendEvents){
 		origin.addLink(destiny);
 		destiny.addPreviousLink(origin);
 		
@@ -203,6 +241,12 @@ public class Grid{
 		}
 	}
 	
+	/**
+	 * Auxiliar function to remove links
+	 * 
+	 * @param linksCleared
+	 * @param letter
+	 */
 	private void removeClearedLinks(List<Link> linksCleared, char letter){
 		links.removeAll(linksCleared);
 		for (Link link : linksCleared) {
@@ -212,12 +256,23 @@ public class Grid{
 		checkTunnelsLinks();
 	}
 	
+	/**
+	 * Auxiliar function to clear previous links
+	 * 
+	 * @param place {@code Place} to clear previous links
+	 */
 	private void clearPreviousLinks(Place place){
 		char letter = place.getLetter();
 		List<Link> linksCleared = new LinkedList<Link>();
 		place.clearPreviousLinks(linksCleared);
 		removeClearedLinks(linksCleared, letter);
 	}
+	
+	/**
+	 * Auxiliar function to clear followed links
+	 * 
+	 * @param place {@code Place} to clear previous links
+	 */
 	private void clearFollowedLinks(Place place){
 		char letter = place.getLetter();
 		List<Link> linksCleared = new LinkedList<Link>();
@@ -225,7 +280,12 @@ public class Grid{
 		removeClearedLinks(linksCleared, letter);
 	}
 	
-	private void clearLinks(Place place){
+	/**
+	 * Clears given place links
+	 * 
+	 * @param place
+	 */
+	private void clearPlaceLinks(Place place){
 		if(place.getPrevious() != null)
 			clearFollowedLinks(place.getPrevious());
 		clearFollowedLinks(place);
@@ -303,7 +363,7 @@ public class Grid{
 		}
 		
 		for (Link link : links) {
-			linkWork(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
+			newLinkWork(getPlaceAtPosition(link.origin), getPlaceAtPosition(link.destiny), false);
 			this.links.add(link);
 		}
 	}

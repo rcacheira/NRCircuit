@@ -2,9 +2,22 @@ package isel.leic.poo.nrcircuit.model;
 
 public class Link {
 
+	/**
+	 * Origin {@code Place}
+	 */
 	public final Position origin;
+	
+	/**
+	 * Destiny {@code Place}
+	 */
 	public final Position destiny;
 	
+	/**
+	 * Creates a new instance of Link with given parameters
+	 * 
+	 * @param origin Origin {@code Place}
+	 * @param destiny Destiny {@code Place}
+	 */
 	public Link(Position origin, Position destiny) {
 		this.origin = origin;
 		this.destiny = destiny;
